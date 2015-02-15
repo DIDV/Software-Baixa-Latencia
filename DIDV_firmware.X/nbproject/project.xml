@@ -3,13 +3,13 @@
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
             <name>DIDV_firmware</name>
-            <creation-uuid>fd17e5a7-f9b6-4f8e-a0b1-1d020538f498</creation-uuid>
+            <creation-uuid>dd68a141-b124-41b4-95b2-33d1789e16fb</creation-uuid>
             <make-project-type>0</make-project-type>
             <c-extensions>c</c-extensions>
             <cpp-extensions/>
             <header-extensions>h</header-extensions>
-            <sourceEncoding>ISO-8859-1</sourceEncoding>
             <asminc-extensions/>
+            <sourceEncoding>ISO-8859-1</sourceEncoding>
             <make-dep-projects/>
         </data>
     </configuration>
