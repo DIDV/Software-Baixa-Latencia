@@ -23,6 +23,25 @@ void high_isr (void) {
     }
 }
 
+void Delay_uS(char uSec) {
+
+   do {
+       Delay1TCY();            // 1
+       Delay1TCY();            // 1
+       Delay1TCY();            // 1
+       Delay1TCY();            // 1
+       Nop();                        // 1
+       Nop();                        // 1
+       Nop();                        // 1
+        } while(--uSec);        // 3
+}
+
+void Delay_ms(int mSec){
+    int i;
+    for(i=0; i<mSec; i++)
+    Delay100TCYx(120);
+}
+
 void main (void)
 {
 
