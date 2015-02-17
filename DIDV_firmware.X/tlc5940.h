@@ -28,7 +28,7 @@
 // TLC5940 Hardware mapping definitions
 
 // Note: SIN, SCLK and GSCLK are tied to module functions on the PIC
-#define TLC5940_SIN	PORTBbits.RB0	//SDO   pin 26
+#define TLC5940_SIN	PORTCbits.RC7	//SDO   pin 26
 #define TLC5940_SCLK	PORTBbits.RB1	//SCK/SCL pin 34
 #define TLC5940_GSCLK	PORTCbits.RC2	//CCP1  pin 17
 
@@ -38,7 +38,7 @@
 #define TLC5940_BLANK	PORTAbits.RA2   //pin 04
 
 // XLAT timer period
-#define XLATCOUNTTIMER	65000
+#define XLATCOUNTTIMER	60659
 
 // The number of cascaded TLC5940s
 #define NUMBEROF5940	1
