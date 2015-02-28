@@ -61,7 +61,7 @@ void main (void)
   initialiseTlc5940();
 
   while (1) {
-      for(channel =0; channel<17; channel++){
+      for(channel =0; channel < 16; channel++){
           setGrayScaleValue(channel, brightness);
           brightness++;
       }

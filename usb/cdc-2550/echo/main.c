@@ -17,7 +17,6 @@
 	#define REMAPPED_LOW_INTERRUPT_VECTOR_ADDRESS	0x818
 #endif
 
-void SetupBoard(void);
 void InterruptHandlerHigh();
 void InterruptHandlerLow();
 void USBSuspend(void);
@@ -37,7 +36,6 @@ int main(void)
     int count = 0, i;
 
     initCDC(); // setup the CDC state machine
-    SetupBoard(); //setup the hardware, customize for your hardware
     usb_init(cdc_device_descriptor, cdc_config_descriptor, cdc_str_descs, USB_NUM_STRINGS); // initialize USB. TODO: Remove magic with macro
     usb_start(); //start the USB peripheral
 
@@ -120,48 +118,6 @@ int main(void)
 
 //board hardware setup
 //add your hardware here
-void SetupBoard(void) {
-
-#if defined (BUSPIRATEV4)
-    INTCON1bits.NSTDIS = 1;
-    volatile unsigned long delay = 0xffff;
-    CLKDIV = 0x0000; // Set PLL prescaler (1:1)
-    //	BP_LEDUSB_DIR=0;	// output
-    CORCONbits.PSV = 1; // JTR PIC24 fixup ?? PSV not being initialized. May have been done by c_init though.
-    PSVPAG = 0; //
-    OSCCONbits.SOSCEN = 0;
-    AD1PCFGL = 0x7FD8; //BUSPIRATEV4 has five analog pins b0, b1, b2, b5, b15
-    AD1PCFGH = 0x2;
-    TRISBbits.TRISB10 = 0; // Let there be LEDS
-    TRISBbits.TRISB8 = 0;
-    TRISBbits.TRISB9 = 0;
-    while (delay--);
-
-#elif defined (IRTOY)
-    //disable some defaults
-    ADCON1 |= 0b1111; //all pins digital
-    CVRCON = 0b00000000;
-
-#elif defined(LOGICSNIFFER) 
-	unsigned int cnt = 2048;
-
-	//all pins digital
-    ANCON0 = 0xFF;                  
-    ANCON1 = 0b00011111;// updated for lower power consumption. See datasheet page 343                  
-
-	//there are some sensative FPGA pins, 
-	//make sure everything is input (should be on startup, but just in case)
-	TRISA=0xff;
-	TRISB=0xff;
-	TRISC=0b11111011; //LED out
-
-	//on 18f24j50 we must manually enable PLL and wait at least 2ms for a lock
-	OSCTUNEbits.PLLEN = 1;  //enable PLL
-	while(cnt--); //wait for lock
-
-#endif
-
-}
 
 // USB suspend not yet enabled
 void USBSuspend(void) {}
@@ -195,6 +151,10 @@ void InterruptHandlerLow(void) {
 
 #pragma interrupt InterruptHandlerHigh nosave= PROD, PCLATH, PCLATU, TBLPTR, TBLPTRU, TABLAT, section (".tmpdata"), section("MATH_DATA")
 void InterruptHandlerHigh(void) { //Also legacy mode interrupt.
+        if(INTCONbits.TMR0IF){
+            WriteTimer0(65536-23531); //23531 = 500ms
+            INTCONbits.TMR0IF=0;
+        }
 	usb_handler();
     ClearGlobalUsbInterruptFlag();
 }

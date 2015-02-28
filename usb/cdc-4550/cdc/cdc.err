@@ -1,0 +1,2 @@
+Warning[2058] ../dp_usb/cdc.c 169 : call of function without prototype
+Warning[2058] ../dp_usb/cdc.c 198 : call of function without prototype

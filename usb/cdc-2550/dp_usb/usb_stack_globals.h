@@ -10,7 +10,10 @@ typedef unsigned char BYTE;
 #include "../dp_usb/usb_stack.h"
 #include "../dp_usb/cdc.h"
 
-#include <string.h>
+// #include <string.h>
+
+#define NULL 0
+typedef unsigned short int size_t;
 
 
 #endif

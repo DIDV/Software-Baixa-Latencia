@@ -18,7 +18,7 @@ or send a letter to
 
 #include "usb_stack_globals.h"    // USB stack only defines Not function related.
 
-#include <string.h>
+//#include <string.h>
 
 enum stopbits {
     one = 0, oneandahalf = 1, two = 2
@@ -27,7 +27,7 @@ enum stopbits {
 enum parity {
     none = 0, odd = 1, even = 2, mark = 3, space = 4
 };
-const char parity_str[] = {'N', 'O', 'E', 'M', 'S'};
+ROM const char parity_str[] = {'N', 'O', 'E', 'M', 'S'};
 
 struct cdc_LineCodeing {
     unsigned long int dwDTERate;
@@ -166,7 +166,7 @@ void cdc_setup(void) {
                     if (sizeof (struct cdc_LineCodeing) < reply_len) {
                         reply_len = sizeof (struct cdc_LineCodeing);
                     }
-                    memcpy(EP0_Inbdp->BDADDR, (const void *) &linecodeing, reply_len);
+                    memcpy(EP0_Inbdp->BDADDR, (ROM const void *) &linecodeing, reply_len);
                     usb_ack_dat1(reply_len); // JTR common addition for STD and CLASS ACK
                     usb_set_in_handler(0, cdc_get_line_coding);
                     break;

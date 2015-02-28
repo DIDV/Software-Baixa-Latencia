@@ -28,6 +28,8 @@ Influence and inspiration taken from http://pe.ece.olin.edu/ece/projects.html
 #endif
 
 
+
+
 ROMPTR const BYTE *usb_device_descriptor;
 ROMPTR const BYTE *usb_config_descriptor;
 ROMPTR const BYTE *usb_string_descriptor;

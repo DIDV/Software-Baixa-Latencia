@@ -4,13 +4,19 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <logicalFolder name="dp_usb" displayName="dp_usb" projectFiles="true">
+        <itemPath>../dp_usb/cdc.h</itemPath>
+        <itemPath>../dp_usb/picusb.h</itemPath>
+        <itemPath>../dp_usb/usb_stack.h</itemPath>
+        <itemPath>../dp_usb/usb_stack_globals.h</itemPath>
+      </logicalFolder>
       <itemPath>descriptors.h</itemPath>
       <itemPath>prj_usb_config.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
                    projectFiles="true">
-      <itemPath>rm18f2550 - HID Bootload.lkr</itemPath>
+      <itemPath>rm18f4550 - HID Bootload.lkr</itemPath>
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
@@ -27,13 +33,14 @@
   </logicalFolder>
   <sourceRootList>
     <Elem>.</Elem>
+    <Elem>../dp_usb</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="default" type="2">
       <toolsSet>
         <developmentServer>localhost</developmentServer>
-        <targetDevice>PIC18F2550</targetDevice>
+        <targetDevice>PIC18F4550</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
         <platformTool>PICkit3PlatformTool</platformTool>
@@ -50,7 +57,7 @@
         </archiverTool>
         <loading>
           <useAlternateLoadableFile>false</useAlternateLoadableFile>
-          <parseOnProdLoad>false</parseOnProdLoad>
+          <parseOnProdLoad>true</parseOnProdLoad>
           <alternateLoadableFile></alternateLoadableFile>
         </loading>
       </compileType>
@@ -99,7 +106,7 @@
       </C18-AS>
       <C18-LD>
         <property key="cod-file" value="true"/>
-        <property key="extra-lib-directories" value="C:/MCC18/lib;;."/>
+        <property key="extra-lib-directories" value="C:/MCC18/lib;."/>
         <property key="hex-output-format" value="INHX32"/>
         <property key="map-file" value="&quot;$(BINDIR_)$(TARGETBASE).map&quot;"/>
       </C18-LD>
@@ -119,6 +126,7 @@
         <property key="ToolFirmwareFilePath"
                   value="Press to browse for a specific firmware version"/>
         <property key="ToolFirmwareOption.UseLatestFirmware" value="true"/>
+        <property key="firmware.download.all" value="false"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="true"/>

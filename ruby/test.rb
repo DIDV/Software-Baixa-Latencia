@@ -14,9 +14,19 @@ parity = SerialPort::NONE
 
 sp = SerialPort.new(port_str, baud_rate, data_bits, stop_bits, parity)
 
-3.times do
+def test_communication sp
   sp.putc 0b10001111
+  sleep 1
   puts "0b#{sp.getc.bytes.first.to_s(16)}"
+  sleep 1
+end
+
+repeat = ARGV[0]
+
+unless repeat
+  loop { test_communication sp }
+else
+  repeat.to_i.times { test_communication sp }
 end
 
 sp.close
