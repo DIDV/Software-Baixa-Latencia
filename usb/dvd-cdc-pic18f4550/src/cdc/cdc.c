@@ -18,7 +18,7 @@ or send a letter to
 
 #include "usb_stack_globals.h"    // USB stack only defines Not function related.
 
-//#include <string.h>
+#include <string.h>
 
 enum stopbits {
     one = 0, oneandahalf = 1, two = 2

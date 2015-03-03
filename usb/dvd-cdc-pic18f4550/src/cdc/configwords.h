@@ -1,6 +1,6 @@
 /*
 *
-*       License: creative commons - attribution, share-alike 
+*       License: creative commons - attribution, share-alike
 *       Copyright Ian Lesnet and friends 2011
 *       http://dangerousprototypes.com
 *
@@ -16,7 +16,7 @@
 #pragma config FCMEN    = OFF
 #pragma config IESO     = OFF
 #pragma config PWRT     = OFF
-#pragma config BOR      = ON
+#pragma config BOR      = OFF
 #pragma config BORV     = 3
 #pragma config VREGEN   = ON
 #pragma config WDT      = OFF
@@ -48,5 +48,3 @@
 #pragma config EBTR2    = OFF
 
 #endif
-
-

@@ -3,6 +3,7 @@
 #(http://rubygems.org/gems/serialport)
 
 require "serialport"
+require "pry"
 
 # params for serial port
 # usaly in the form of /dev/tty.usbmodem*
@@ -14,19 +15,27 @@ parity = SerialPort::NONE
 
 sp = SerialPort.new(port_str, baud_rate, data_bits, stop_bits, parity)
 
-def test_communication sp
-  sp.putc 0b10001111
-  sleep 1
-  puts "0b#{sp.getc.bytes.first.to_s(16)}"
-  sleep 1
+def send_data sp, data
+  puts "Sending '#{data}'..."
+  data.each_char { |c| sp.putc c }
+  puts "Data sent."
 end
 
-repeat = ARGV[0]
-
-unless repeat
-  loop { test_communication sp }
-else
-  repeat.to_i.times { test_communication sp }
+def get_data sp, times=nil
+  # this first version just gets data forever
+  puts "Getting getting data..."
+  if (times)
+    times.times { puts sp.getc }
+  else
+    loop { puts sp.getc }
+  end
 end
+
+def send_and_get_data sp, data
+  send_data sp, data
+  get_data sp, data.size
+end
+
+binding.pry
 
 sp.close
