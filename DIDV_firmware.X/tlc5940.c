@@ -5,7 +5,7 @@ TLC5940 LED driver PIC library
 Copyright (C) 2011 Kevin Risden
 
 This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
+it under the terms of the GNU General Public License as published byMJW,
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
@@ -18,6 +18,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Email: compuwizard123@gmail.com
+ 
+ * Remark: Program modified by DIDV Developers.
+ *         Configurate for use the Servomotors.
 
 ************************************************************************/
 // Global includes
@@ -35,41 +38,8 @@ unsigned char packedGrayScaleDataBuffer2[24 * NUMBEROF5940];
 
 // Flags for the interrupt handling routine
 unsigned char waitingForXLAT = 0;
+
 unsigned char updatePending = 0;
-
-// Set initial dot correction data
-void setInitialDotCorrection(unsigned char *dotCorrectionValues)
-{
-	int ledChannel;
-	int bitCounter;
-	// Set VPRG high (Dot correction mode)
-	TLC5940_VPRG = 1;
-
-	// We are passed an array of unsigned char values which are 8 bits each, however the dot
-	// correction is expecting 6 bit data for each channel (0-63) so only send the 6 least
-	// significant bits of each entry in the array.  The values need to be sent MSB first.
-	for(ledChannel = 0; ledChannel < (16 * NUMBEROF5940); ledChannel++)
-	{
-		unsigned char bitMask = 0b00100000;
-
-		for(bitCounter = 5; bitCounter >= 0; bitCounter--)
-		{
-			// Set SIN to DC data bit
-			TLC5940_SIN = (dotCorrectionValues[ledChannel] & bitMask) >> bitCounter;
-
-			// Pulse the serial clock
-			TLC5940_SCLK = 1;
-			TLC5940_SCLK = 0;
-
-			// Move to the next bit in the mask
-			bitMask >>= 1;
-		}
-	}
-
-	// Pulse XLAT
-	TLC5940_XLAT = 1;
-	TLC5940_XLAT = 0;
-}
 
 // Since the TLC5940 requires an 'extra' SCLK pulse the first time the grayscales
 // are cycled we have to do one input cycle manually, after this we can use the SPI
@@ -83,9 +53,6 @@ void setInitialGrayScaleValues()
 
 	// Reset Data_Counter = 0
 	int dataCounter = 0;
-
-	// Set VPRG = Low (Grayscale mode)
-	TLC5940_VPRG = 0;
 
 	// Set BLANK = High (Turn LED's Off)
 	TLC5940_BLANK = 1;
@@ -193,45 +160,34 @@ void processXLATinterrupt(void)
 // Initialise the TLC5940 devices
 void initialiseTlc5940()
 {
-	unsigned char dotCorrectionValues[16 * NUMBEROF5940];
+	//unsigned char dotCorrectionValues[16 * NUMBEROF5940];
 	unsigned char ledChannel;
 
 	// Initialise device pins
 	TLC5940_GSCLK 	= 0;
 	TLC5940_SCLK 	= 0;
-	TLC5940_VPRG 	= 1;
 	TLC5940_XLAT 	= 0;
 	TLC5940_BLANK 	= 1;
-
-	// Set up an array of dot correction values (0-63)
-	for(ledChannel = 0; ledChannel < (16 * NUMBEROF5940); ledChannel++)
-	{
-		dotCorrectionValues[ledChannel] = 63;
-	}
-
-	// Set the initial dot correction values
-	setInitialDotCorrection(dotCorrectionValues);
 
 	// Set the initial grayscale values
 	setInitialGrayScaleValues();
 
 	// Set up SPI for communicating with the TLC5940
-	OpenSPI(SPI_FOSC_64, MODE_00, SMPEND);
+	OpenSPI(SPI_FOSC_4, MODE_00, SMPEND);  //Frequência de 48Mhz/4 = 12MHz.      (Não gera GSCLK/ Alterou SCLK /Freq.SIN alterada)
 
+        
 	// PWM1 is used to generate the GSCLK clock signal
-	//50Hz (motor frequency) *4096 = 204800Hz, let's use 203390
+	//50Hz (motor frequency) *4096 = 204.800Hz, let's use 203390
 	// PWM 1 is 203390 Hz (203,29 KHz)
-
 	OpenTimer2(TIMER_INT_OFF & T2_PS_1_1);
 	SetOutputPWM1(SINGLE_OUT, PWM_MODE_1);
-	//OpenPWM1(7); //Descobrir como usar, pode ser util
 
-	// Config PWM to 750KHz
-	T2CON = 0b00000100; // prescaler + turn on TMR2;
-	PR2 = 0b00111010;
-	CCPR1L = 0b00000011;  // set duty MSB
-	CCP1CON = 0b00001100; // duty lowest bits + PWM mode
-	// Timer0 should interrupt every 4096 pulses of the PWM1
+        PR2 = 0b00111010 ;
+        T2CON = 0b00000100 ;
+        CCPR1L = 0b00000000 ;
+        CCP1CON = 0b00111100 ;
+
+        // Timer0 should interrupt every 4096 pulses of the PWM1
 	// PWM1 period is 203,39KHz which is one pulse every 4,91 uS
 	// We need to wait for 4096 pulses before calling the interrupt
 	// so 4.91 uS * 4096 = 20138 uS
