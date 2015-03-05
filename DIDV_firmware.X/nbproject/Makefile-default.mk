@@ -45,17 +45,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=main.c tlc5940.c
+SOURCEFILES_QUOTED_IF_SPACED=main.c tlc5940.c usb_includes/cdc.c usb_includes/usb_functions.c usb_includes/usb_stack.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/main.o ${OBJECTDIR}/tlc5940.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/main.o.d ${OBJECTDIR}/tlc5940.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/main.o ${OBJECTDIR}/tlc5940.o ${OBJECTDIR}/usb_includes/cdc.o ${OBJECTDIR}/usb_includes/usb_functions.o ${OBJECTDIR}/usb_includes/usb_stack.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/main.o.d ${OBJECTDIR}/tlc5940.o.d ${OBJECTDIR}/usb_includes/cdc.o.d ${OBJECTDIR}/usb_includes/usb_functions.o.d ${OBJECTDIR}/usb_includes/usb_stack.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/main.o ${OBJECTDIR}/tlc5940.o
+OBJECTFILES=${OBJECTDIR}/main.o ${OBJECTDIR}/tlc5940.o ${OBJECTDIR}/usb_includes/cdc.o ${OBJECTDIR}/usb_includes/usb_functions.o ${OBJECTDIR}/usb_includes/usb_stack.o
 
 # Source Files
-SOURCEFILES=main.c tlc5940.c
+SOURCEFILES=main.c tlc5940.c usb_includes/cdc.c usb_includes/usb_functions.c usb_includes/usb_stack.c
 
 
 CFLAGS=
@@ -105,6 +105,30 @@ ${OBJECTDIR}/tlc5940.o: tlc5940.c  nbproject/Makefile-${CND_CONF}.mk
 	@${DEP_GEN} -d ${OBJECTDIR}/tlc5940.o 
 	@${FIXDEPS} "${OBJECTDIR}/tlc5940.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
+${OBJECTDIR}/usb_includes/cdc.o: usb_includes/cdc.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/usb_includes" 
+	@${RM} ${OBJECTDIR}/usb_includes/cdc.o.d 
+	@${RM} ${OBJECTDIR}/usb_includes/cdc.o 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -ms -oa- -o-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/usb_includes/cdc.o   usb_includes/cdc.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/usb_includes/cdc.o 
+	@${FIXDEPS} "${OBJECTDIR}/usb_includes/cdc.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
+	
+${OBJECTDIR}/usb_includes/usb_functions.o: usb_includes/usb_functions.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/usb_includes" 
+	@${RM} ${OBJECTDIR}/usb_includes/usb_functions.o.d 
+	@${RM} ${OBJECTDIR}/usb_includes/usb_functions.o 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -ms -oa- -o-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/usb_includes/usb_functions.o   usb_includes/usb_functions.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/usb_includes/usb_functions.o 
+	@${FIXDEPS} "${OBJECTDIR}/usb_includes/usb_functions.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
+	
+${OBJECTDIR}/usb_includes/usb_stack.o: usb_includes/usb_stack.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/usb_includes" 
+	@${RM} ${OBJECTDIR}/usb_includes/usb_stack.o.d 
+	@${RM} ${OBJECTDIR}/usb_includes/usb_stack.o 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -ms -oa- -o-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/usb_includes/usb_stack.o   usb_includes/usb_stack.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/usb_includes/usb_stack.o 
+	@${FIXDEPS} "${OBJECTDIR}/usb_includes/usb_stack.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
+	
 else
 ${OBJECTDIR}/main.o: main.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
@@ -122,18 +146,42 @@ ${OBJECTDIR}/tlc5940.o: tlc5940.c  nbproject/Makefile-${CND_CONF}.mk
 	@${DEP_GEN} -d ${OBJECTDIR}/tlc5940.o 
 	@${FIXDEPS} "${OBJECTDIR}/tlc5940.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
+${OBJECTDIR}/usb_includes/cdc.o: usb_includes/cdc.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/usb_includes" 
+	@${RM} ${OBJECTDIR}/usb_includes/cdc.o.d 
+	@${RM} ${OBJECTDIR}/usb_includes/cdc.o 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -ms -oa- -o-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/usb_includes/cdc.o   usb_includes/cdc.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/usb_includes/cdc.o 
+	@${FIXDEPS} "${OBJECTDIR}/usb_includes/cdc.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
+	
+${OBJECTDIR}/usb_includes/usb_functions.o: usb_includes/usb_functions.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/usb_includes" 
+	@${RM} ${OBJECTDIR}/usb_includes/usb_functions.o.d 
+	@${RM} ${OBJECTDIR}/usb_includes/usb_functions.o 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -ms -oa- -o-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/usb_includes/usb_functions.o   usb_includes/usb_functions.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/usb_includes/usb_functions.o 
+	@${FIXDEPS} "${OBJECTDIR}/usb_includes/usb_functions.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
+	
+${OBJECTDIR}/usb_includes/usb_stack.o: usb_includes/usb_stack.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/usb_includes" 
+	@${RM} ${OBJECTDIR}/usb_includes/usb_stack.o.d 
+	@${RM} ${OBJECTDIR}/usb_includes/usb_stack.o 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -ms -oa- -o-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/usb_includes/usb_stack.o   usb_includes/usb_stack.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/usb_includes/usb_stack.o 
+	@${FIXDEPS} "${OBJECTDIR}/usb_includes/usb_stack.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
+	
 endif
 
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: link
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
-dist/${CND_CONF}/${IMAGE_TYPE}/DIDV_firmware.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk    
+dist/${CND_CONF}/${IMAGE_TYPE}/DIDV_firmware.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk    rm18f4550\ -\ HID\ Bootload.lkr
 	@${MKDIR} dist/${CND_CONF}/${IMAGE_TYPE} 
-	${MP_LD} $(MP_EXTRA_LD_PRE)   -p$(MP_PROCESSOR_OPTION_LD)  -w -x -u_DEBUG -m"${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map"  -z__MPLAB_BUILD=1  -u_CRUNTIME -z__MPLAB_DEBUG=1 -z__MPLAB_DEBUGGER_PK3=1 $(MP_LINKER_DEBUG_OPTION) -l ${MP_CC_DIR}/../lib  -o dist/${CND_CONF}/${IMAGE_TYPE}/DIDV_firmware.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}   
+	${MP_LD} $(MP_EXTRA_LD_PRE) "rm18f4550 - HID Bootload.lkr"  -p$(MP_PROCESSOR_OPTION_LD)  -w -x -u_DEBUG -m"${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map"  -z__MPLAB_BUILD=1  -u_CRUNTIME -z__MPLAB_DEBUG=1 -z__MPLAB_DEBUGGER_PK3=1 $(MP_LINKER_DEBUG_OPTION) -l ${MP_CC_DIR}/../lib  -o dist/${CND_CONF}/${IMAGE_TYPE}/DIDV_firmware.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}   
 else
-dist/${CND_CONF}/${IMAGE_TYPE}/DIDV_firmware.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk   
+dist/${CND_CONF}/${IMAGE_TYPE}/DIDV_firmware.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk   rm18f4550\ -\ HID\ Bootload.lkr
 	@${MKDIR} dist/${CND_CONF}/${IMAGE_TYPE} 
-	${MP_LD} $(MP_EXTRA_LD_PRE)   -p$(MP_PROCESSOR_OPTION_LD)  -w  -m"${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map"  -z__MPLAB_BUILD=1  -u_CRUNTIME -l ${MP_CC_DIR}/../lib  -o dist/${CND_CONF}/${IMAGE_TYPE}/DIDV_firmware.X.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}   
+	${MP_LD} $(MP_EXTRA_LD_PRE) "rm18f4550 - HID Bootload.lkr"  -p$(MP_PROCESSOR_OPTION_LD)  -w  -m"${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map"  -z__MPLAB_BUILD=1  -u_CRUNTIME -l ${MP_CC_DIR}/../lib  -o dist/${CND_CONF}/${IMAGE_TYPE}/DIDV_firmware.X.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}   
 endif
 
 

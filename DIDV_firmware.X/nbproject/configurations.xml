@@ -4,16 +4,32 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <logicalFolder name="f1" displayName="usb_includes" projectFiles="true">
+        <itemPath>usb_includes/cdc.h</itemPath>
+        <itemPath>usb_includes/descriptors.h</itemPath>
+        <itemPath>usb_includes/init_usb.h</itemPath>
+        <itemPath>usb_includes/picusb.h</itemPath>
+        <itemPath>usb_includes/prj_usb_config.h</itemPath>
+        <itemPath>usb_includes/usb_functions.h</itemPath>
+        <itemPath>usb_includes/usb_stack.h</itemPath>
+        <itemPath>usb_includes/usb_stack_globals.h</itemPath>
+      </logicalFolder>
       <itemPath>tlc5940.h</itemPath>
       <itemPath>hardware_init.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
                    projectFiles="true">
+      <itemPath>rm18f4550 - HID Bootload.lkr</itemPath>
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <logicalFolder name="f1" displayName="usb_sources" projectFiles="true">
+        <itemPath>usb_includes/cdc.c</itemPath>
+        <itemPath>usb_includes/usb_functions.c</itemPath>
+        <itemPath>usb_includes/usb_stack.c</itemPath>
+      </logicalFolder>
       <itemPath>main.c</itemPath>
       <itemPath>tlc5940.c</itemPath>
     </logicalFolder>
@@ -23,6 +39,9 @@
       <itemPath>Makefile</itemPath>
     </logicalFolder>
   </logicalFolder>
+  <sourceRootList>
+    <Elem>usb_includes</Elem>
+  </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="default" type="2">

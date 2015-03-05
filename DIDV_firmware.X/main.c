@@ -3,16 +3,17 @@
 #include <timers.h>
 #include <delays.h>
 #include "hardware_init.h"
+#include "usb_includes/usb_functions.h"
 
 
 
 
 void high_isr(void);
-#pragma code high_vector=0x08
+// #pragma code high_vector=0x08
  void interrupt_at_high_vector(void)
  {
- _asm GOTO high_isr _endasm
- }
+  _asm GOTO high_isr _endasm
+ } 
 
 #pragma code
 
@@ -49,6 +50,7 @@ void main (void)
 {
   int brightness=0;
   unsigned char channel = 0;
+  char received_char=0xFF;
   TRISA = 0x00;
   TRISB = 0x00;
   TRISC = 0x00;
@@ -57,8 +59,7 @@ void main (void)
   PORTC = 0x00;
   ADCON1 = 0x0F;
 
-
-
+  usb_install();
 
   SSPCON1bits.SSPEN = 1;
   initialiseTlc5940();
@@ -143,5 +144,7 @@ void main (void)
       brightness=3686;
       setGrayScaleValue(channel, brightness);
       updateTlc5940();
+
+      poll_getc_cdc(&received_char);
   }
 }
