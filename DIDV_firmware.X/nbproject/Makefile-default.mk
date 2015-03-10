@@ -45,17 +45,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=main.c tlc5940.c usb_includes/cdc.c usb_includes/usb_functions.c usb_includes/usb_stack.c
+SOURCEFILES_QUOTED_IF_SPACED=usb_includes/cdc.c usb_includes/usb_functions.c usb_includes/usb_stack.c main.c tlc5940.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/main.o ${OBJECTDIR}/tlc5940.o ${OBJECTDIR}/usb_includes/cdc.o ${OBJECTDIR}/usb_includes/usb_functions.o ${OBJECTDIR}/usb_includes/usb_stack.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/main.o.d ${OBJECTDIR}/tlc5940.o.d ${OBJECTDIR}/usb_includes/cdc.o.d ${OBJECTDIR}/usb_includes/usb_functions.o.d ${OBJECTDIR}/usb_includes/usb_stack.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/usb_includes/cdc.o ${OBJECTDIR}/usb_includes/usb_functions.o ${OBJECTDIR}/usb_includes/usb_stack.o ${OBJECTDIR}/main.o ${OBJECTDIR}/tlc5940.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/usb_includes/cdc.o.d ${OBJECTDIR}/usb_includes/usb_functions.o.d ${OBJECTDIR}/usb_includes/usb_stack.o.d ${OBJECTDIR}/main.o.d ${OBJECTDIR}/tlc5940.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/main.o ${OBJECTDIR}/tlc5940.o ${OBJECTDIR}/usb_includes/cdc.o ${OBJECTDIR}/usb_includes/usb_functions.o ${OBJECTDIR}/usb_includes/usb_stack.o
+OBJECTFILES=${OBJECTDIR}/usb_includes/cdc.o ${OBJECTDIR}/usb_includes/usb_functions.o ${OBJECTDIR}/usb_includes/usb_stack.o ${OBJECTDIR}/main.o ${OBJECTDIR}/tlc5940.o
 
 # Source Files
-SOURCEFILES=main.c tlc5940.c usb_includes/cdc.c usb_includes/usb_functions.c usb_includes/usb_stack.c
+SOURCEFILES=usb_includes/cdc.c usb_includes/usb_functions.c usb_includes/usb_stack.c main.c tlc5940.c
 
 
 CFLAGS=
@@ -89,22 +89,6 @@ endif
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: compile
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
-${OBJECTDIR}/main.o: main.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}" 
-	@${RM} ${OBJECTDIR}/main.o.d 
-	@${RM} ${OBJECTDIR}/main.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -ms -oa- -o-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/main.o   main.c 
-	@${DEP_GEN} -d ${OBJECTDIR}/main.o 
-	@${FIXDEPS} "${OBJECTDIR}/main.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
-	
-${OBJECTDIR}/tlc5940.o: tlc5940.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}" 
-	@${RM} ${OBJECTDIR}/tlc5940.o.d 
-	@${RM} ${OBJECTDIR}/tlc5940.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -ms -oa- -o-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/tlc5940.o   tlc5940.c 
-	@${DEP_GEN} -d ${OBJECTDIR}/tlc5940.o 
-	@${FIXDEPS} "${OBJECTDIR}/tlc5940.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
-	
 ${OBJECTDIR}/usb_includes/cdc.o: usb_includes/cdc.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/usb_includes" 
 	@${RM} ${OBJECTDIR}/usb_includes/cdc.o.d 
@@ -129,12 +113,11 @@ ${OBJECTDIR}/usb_includes/usb_stack.o: usb_includes/usb_stack.c  nbproject/Makef
 	@${DEP_GEN} -d ${OBJECTDIR}/usb_includes/usb_stack.o 
 	@${FIXDEPS} "${OBJECTDIR}/usb_includes/usb_stack.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
-else
 ${OBJECTDIR}/main.o: main.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/main.o.d 
 	@${RM} ${OBJECTDIR}/main.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -ms -oa- -o-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/main.o   main.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -ms -oa- -o-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/main.o   main.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/main.o 
 	@${FIXDEPS} "${OBJECTDIR}/main.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
@@ -142,10 +125,11 @@ ${OBJECTDIR}/tlc5940.o: tlc5940.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/tlc5940.o.d 
 	@${RM} ${OBJECTDIR}/tlc5940.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -ms -oa- -o-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/tlc5940.o   tlc5940.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -ms -oa- -o-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/tlc5940.o   tlc5940.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/tlc5940.o 
 	@${FIXDEPS} "${OBJECTDIR}/tlc5940.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
+else
 ${OBJECTDIR}/usb_includes/cdc.o: usb_includes/cdc.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/usb_includes" 
 	@${RM} ${OBJECTDIR}/usb_includes/cdc.o.d 
@@ -169,6 +153,22 @@ ${OBJECTDIR}/usb_includes/usb_stack.o: usb_includes/usb_stack.c  nbproject/Makef
 	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -ms -oa- -o-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/usb_includes/usb_stack.o   usb_includes/usb_stack.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/usb_includes/usb_stack.o 
 	@${FIXDEPS} "${OBJECTDIR}/usb_includes/usb_stack.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
+	
+${OBJECTDIR}/main.o: main.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/main.o.d 
+	@${RM} ${OBJECTDIR}/main.o 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -ms -oa- -o-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/main.o   main.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/main.o 
+	@${FIXDEPS} "${OBJECTDIR}/main.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
+	
+${OBJECTDIR}/tlc5940.o: tlc5940.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/tlc5940.o.d 
+	@${RM} ${OBJECTDIR}/tlc5940.o 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -ms -oa- -o-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/tlc5940.o   tlc5940.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/tlc5940.o 
+	@${FIXDEPS} "${OBJECTDIR}/tlc5940.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 endif
 
