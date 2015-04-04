@@ -33,15 +33,15 @@
 #define TLC5940_GSCLK	PORTCbits.RC2	//CCP1    pin 17
 
 // These you can assign to other pins if required
-#define TLC5940_XLAT	PORTAbits.RA0   //pin 02
-#define TLC5940_VPRG	PORTAbits.RA1   //pin 03
-#define TLC5940_BLANK	PORTAbits.RA2   //pin 04
+#define TLC5940_XLAT	PORTEbits.RE1   //pin 09
+// #define TLC5940_VPRG	PORTAbits.RA1   //pin 03
+#define TLC5940_BLANK	PORTAbits.RA5   //pin 07
 
 // XLAT timer period
 #define XLATCOUNTTIMER  35356   // 50Hz
 
 // The number of cascaded TLC5940s
-#define NUMBEROF5940	1
+#define NUMBEROF5940	4
 
 // Function prototypes
 void setInitialGrayScaleValues(void);

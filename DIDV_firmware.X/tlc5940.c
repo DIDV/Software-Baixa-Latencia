@@ -205,9 +205,12 @@ void initialiseTlc5940()
 	INTCONbits.TMR0IF = 0;				// Clear the timer0 interrupt flag
 	WriteTimer0(XLATCOUNTTIMER);
 
-	RCONbits.IPEN = 1;      // Enable prioritised interrupts
+        RCONbits.IPEN = 1;
+
 	INTCONbits.GIEH = 1;	// Global enable high priority interrupts
 	INTCONbits.GIEL = 1;    // Global enable low priority interrupts
+
+
 }
 
 // Set the grayscale value of a LED channel
