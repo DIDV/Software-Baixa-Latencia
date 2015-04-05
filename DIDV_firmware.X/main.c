@@ -28,14 +28,15 @@ void high_isr(void);
 
 int processa_controle( char controle );
 int processa_dado( char dado );
-void rotina_usb();
+char recebe_dado_usb();
 void inicia_motores();
 void config_pic();
-int config_expansao();
-void ativa_dados( char dados[30]);
+void config_expansao();
+void ativa_dados(char dados[10]);
 
 void main(void)
 {
+    char byte_recebido;
     config_pic();
     initialiseTlc5940();
     config_expansao(); //Verificação de existencia de expansão
@@ -44,22 +45,20 @@ void main(void)
 
     do
     {
-        rotina_usb();
+        byte_recebido = recebe_dado_usb();
+        processa_controle(byte_recebido);
     } while(1);
 }
 
 
 
-void rotina_usb()
+char recebe_dado_usb()
 {
-        char byte_recebido;
-        char mascara_tipo_byte = 0xC0; // 0b11000000
-        char mascara_valor_byte = 0x3F; // 0b00111111
-        char tipo_byte;
-        char valor_byte;
-        
-        usb_handler();
+    char byte_recebido;
 
+    do
+    {
+        usb_handler();
         /* O valor 0xFF funciona como padrao para a variavel byte_recebido,
          * e significa que nenhum byte foi recebido pelo PIC. */
         byte_recebido = 0xFF;
@@ -71,30 +70,38 @@ void rotina_usb()
 
         /* Se nenhum byte tiver sido recebido, esse ciclo do loop
          * sera' encerrado nesse ponto. */
-        if ( byte_recebido == 0xFF ) return;
+    } while ( byte_recebido == 0xFF );
 
-        processa_controle(byte_recebido);
-}
+    return byte_recebido;
+
+} 
 
 
 
 int processa_controle( char controle )
 {
-     char mascara_tipo_byte = 0x5A; // Caracter 'Z' será verificação da Expansao (ADC)
      /* O comando putc_cdc envia o byte controle para o buffer de saida do
      * PIC. Nesse caso, esse byte sera diferente do enviado para o PIC, pois
      * os dois bits mais significativos foram transformados em 00 e, se fossem
      * iguais a 00 inicialmente, essa funcao nao teria sido chamada. */
-    if(controle ==  mascara_tipo_byte)
+    if(controle ==  0x5A) // Caracter 'Z' será verificação da Expansao (ADC)
     {
         putc_cdc(' ');
         putc_cdc(tamanhoDeExpansao);
         putc_cdc(' ');
         inicia_motores(0,64,3687);
     }
-    else if(controle == 0x30) // Caracter '0' será dados
+    else if(controle == 0x30) // Caracter '0' será dados recebidos
     {
-        processa_dado(0);
+        processa_dado('0');
+    }
+    else if(controle == 0x31) // Caracter '1' será dados pre programados
+    {
+        processa_dado('1');
+    }
+    else if(controle == 0x41) // Caracter 'A' nova verificaçao do ADC/Expansão
+    {
+        config_expansao();
     }
     else
     {
@@ -108,18 +115,25 @@ int processa_controle( char controle )
 
 int processa_dado( char dado )
 {
-    /* Ja' nesse caso, o byte enviado sera identico ao recebido. */
     char data[10];
-    data[0]='?';//? = 0b00111111
-    data[1]='0';//0 = 0b00110000
-    data[2]='0';
-    data[3]='0';
-    data[4]='0';
-    data[5]='0';
-    data[6]='0';
-    data[7]='0';
-    data[8]='0';
-    data[9]='?';
+    if(dado == '1')
+    {
+    /* Ja' nesse caso, o byte enviado sera identico ao recebido. */
+        data[0]='?';//? = 0b00111111
+        data[1]='0';//0 = 0b00110000
+        data[2]='0';
+        data[3]='0';
+        data[4]='0';
+        data[5]='0';
+        data[6]='0';
+        data[7]='0';
+        data[8]='0';
+        data[9]='?';
+    }
+    else if(dado == '0')
+    {
+
+    }
     ativa_dados(data);
     putc_cdc(' ');
     putc_cdc('d');
@@ -134,7 +148,7 @@ void inicia_motores( unsigned char inicial, unsigned char final, int quanto )
     unsigned char canal;
     for(canal = inicial; canal < final; canal++)
     {
-      setGrayScaleValue(canal, quanto);
+        setGrayScaleValue(canal, quanto);
     }
     updateTlc5940();
     PORTDbits.RD7 = 1;
@@ -163,18 +177,19 @@ void config_pic(void)
 
 
 
-int config_expansao(void)
+void config_expansao(void)
 {
     unsigned short tensao; // Armazena o valor da conversão ADC feita
     unsigned short numeroDeVericacao=0; // Sinalização de erro de leitura
 
     while(1)
     {
-        SetChanADC(ADC_CH1); // Seta o canal analógico 1 (AN1) no qual verifica a existensia ou não de expansão por um divisor de tensão
+        putc_cdc('0');
+        SetChanADC(ADC_CH1); // Seta o canal analógico 1 (AN1) no qual verifica a existencia ou não de expansão por um divisor de tensão
         ConvertADC(); //Inicia conversão ADC
         while(BusyADC()); // Aguarda a finalização da conversão
         tensao = ReadADC(); //Guarda a informação obtida da conversão
-        /* * Funsão desenvolvida para verificar o nível de tensão no Port AN0, no qual verificará se existe expansão conectada
+        /* * Função desenvolvida para verificar o nível de tensão no Port AN0, no qual verificará se existe expansão conectada
                  e o tamanho da mesma, de acordo com os seguintes parametros:
 
                   -> Sem Expansão:
@@ -192,39 +207,47 @@ int config_expansao(void)
                   três vezes seguidas, irá selecionar o módulo Sem Expansão e informar o erro ao Alto Nível;
 
         */
-        // Sem Expanssão (10 Celulas)
+        // Sem Expansão (10 Celulas)
         if (tensao >= 717) //Verifica se a tensão da porta AN0 é maior que 3,5V (717/1024*5V=3,501V)
         {
-            if(tamanhoDeExpansao = '0')
+            putc_cdc('1');
+            if(tamanhoDeExpansao == '0')
             {
-                return 0;
+                putc_cdc('2');
+                return;
             }
-            tamanhoDeExpansao = '0';
+            tamanhoDeExpansao == '0';
         }
-        // Expanssão no tamanho pequeno (10 + 10 Celulas = 20 )
+        // Expansão no tamanho pequeno (10 + 10 Celulas = 20 )
         else if (tensao <= 205) //Verifica se a tensão da porta AN0 é menor que 1V (205/1024*5V=1,001V) (O ideal é que na porta tenha 0V)
         {
-            if(tamanhoDeExpansao = '1')
+            putc_cdc('3');
+            if(tamanhoDeExpansao == '1')
             {
-                return 0;
+                putc_cdc('4');
+                return;
             }
-            tamanhoDeExpansao = '1';
+            tamanhoDeExpansao == '1';
         }
-        // Expanssão no tamanho máximo (10 + 20 Celulas)
+        // Expansão no tamanho máximo (10 + 20 Celulas)
         else if (tensao >= 307 && tensao <= 614) //Verifica se a tensão da porta AN0 é maior que 1,5V (307/1024*5=1,499V) e menor que 3V (614/1024*5=2,998V)
         {
-            if(tamanhoDeExpansao = '2')
+            putc_cdc('5');
+            if(tamanhoDeExpansao == '2')
             {
-                return 0;
+                putc_cdc('6');
+                return;
             }
-            tamanhoDeExpansao = '2';
+            tamanhoDeExpansao == '2';
         }
         // Erro de leitura
         if(numeroDeVericacao > 1) //Caso o processo faça mais que 3 mediçoes no ADC sem fazer 2 medidas consecutivas iguais, será informado erro
         {
+            putc_cdc('7');
             tamanhoDeExpansao = 'X';
-            return 0;
+            return;
         }
+        putc_cdc('8');
         numeroDeVericacao++;
     }
 }
