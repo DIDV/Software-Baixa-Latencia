@@ -1,4 +1,5 @@
 Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_firmware.X\main.c 39 : call of function without prototype
+Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_firmware.X\main.c 41 : call of function without prototype
 Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_firmware.X\main.c 43 : call of function without prototype
 Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_firmware.X\main.c 47 : call of function without prototype
 Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_firmware.X\main.c 61 : call of function without prototype
@@ -7,11 +8,11 @@ Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_fi
 Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_firmware.X\main.c 91 : call of function without prototype
 Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_firmware.X\main.c 92 : call of function without prototype
 Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_firmware.X\main.c 93 : call of function without prototype
-Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_firmware.X\main.c 97 : call of function without prototype
-Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_firmware.X\main.c 98 : call of function without prototype
-Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_firmware.X\main.c 120 : call of function without prototype
-Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_firmware.X\main.c 121 : call of function without prototype
-Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_firmware.X\main.c 237 : call of function without prototype
-Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_firmware.X\main.c 247 : call of function without prototype
+Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_firmware.X\main.c 101 : call of function without prototype
+Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_firmware.X\main.c 102 : call of function without prototype
+Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_firmware.X\main.c 124 : call of function without prototype
+Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_firmware.X\main.c 125 : call of function without prototype
+Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_firmware.X\main.c 242 : call of function without prototype
 Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_firmware.X\main.c 252 : call of function without prototype
-Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_firmware.X\main.c 258 : call of function without prototype
+Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_firmware.X\main.c 257 : call of function without prototype
+Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_firmware.X\main.c 263 : call of function without prototype

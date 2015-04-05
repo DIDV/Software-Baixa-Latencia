@@ -29,18 +29,18 @@ void high_isr(void);
 int processa_controle( char controle );
 int processa_dado( char dado );
 void rotina_usb();
-void mexe();
+void inicia_motores();
 void config_pic();
-char config_expansao( char leitura );
+int config_expansao();
 void ativa_dados( char dados[30]);
 
 void main(void)
 {
     config_pic();
     initialiseTlc5940();
-    config_expansao('E'); //escrita
+    config_expansao(); //Verificação de existencia de expansão
     usb_install();
-    mexe(0,64,3891);
+    inicia_motores(0,64,3891); // Configura os motores inicialmente p/ posição zero
 
     do
     {
@@ -80,7 +80,7 @@ void rotina_usb()
 
 int processa_controle( char controle )
 {
-     char mascara_tipo_byte = 0x5A; // Caracter 'Z'
+     char mascara_tipo_byte = 0x5A; // Caracter 'Z' será verificação da Expansao (ADC)
      /* O comando putc_cdc envia o byte controle para o buffer de saida do
      * PIC. Nesse caso, esse byte sera diferente do enviado para o PIC, pois
      * os dois bits mais significativos foram transformados em 00 e, se fossem
@@ -88,13 +88,17 @@ int processa_controle( char controle )
     if(controle ==  mascara_tipo_byte)
     {
         putc_cdc(' ');
-        putc_cdc(config_expansao('L'));
+        putc_cdc(tamanhoDeExpansao);
         putc_cdc(' ');
-        mexe(0,64,3687);
+        inicia_motores(0,64,3687);
+    }
+    else if(controle == 0x30) // Caracter '0' será dados
+    {
+        processa_dado(0);
     }
     else
     {
-        mexe(0,64,3687);
+        inicia_motores(0,64,3687);
         putc_cdc('c');
     }
     return 1;
@@ -125,14 +129,15 @@ int processa_dado( char dado )
 
 
 
-void mexe( unsigned char inicial, unsigned char final, int quanto )
+void inicia_motores( unsigned char inicial, unsigned char final, int quanto )
 {
     unsigned char canal;
     for(canal = inicial; canal < final; canal++)
     {
       setGrayScaleValue(canal, quanto);
-    } updateTlc5940();
-
+    }
+    updateTlc5940();
+    PORTDbits.RD7 = 1;
 }
 
 
@@ -144,10 +149,12 @@ void config_pic(void)
     TRISA = 0x0F;
     TRISB = 0x00;
     TRISC = 0x00;
+    TRISD = 0x00;
     TRISE = 0x00;
     PORTA = 0x00;
     PORTB = 0x00;
     PORTC = 0x00;
+    PORTD = 0x00;
     PORTE = 0x00;
 
     ADCON1 = 0x0D; // 0b0000 1011 - Port A0 até A3 como analógico (Bit 3,2,1 e 0) Setado como +5 e 0V (Bit 6 e 5)
@@ -156,23 +163,18 @@ void config_pic(void)
 
 
 
-char config_expansao( char leitura )
+int config_expansao(void)
 {
-    //char tamanhoDeExpansao; //Variavel que armazena o tamanho da expansão
+    unsigned short tensao; // Armazena o valor da conversão ADC feita
+    unsigned short numeroDeVericacao=0; // Sinalização de erro de leitura
 
-    if(leitura == 'E') // Processo que descobre o tamanho da expansão
+    while(1)
     {
-        unsigned short tensao; // Armazena o valor da conversão ADC feita
-        unsigned short erroDeLeitura=0; // Sinalização de erro de leitura
-
-        while(1)
-        {
-            SetChanADC(ADC_CH1); // Seta o canal analógico 1 (AN1) no qual verifica a existensia ou não de expansão por um divisor de tensão
-            ConvertADC(); //Inicia conversão ADC
-            while(BusyADC()); // Aguarda a finalização da conversão
-            tensao = ReadADC(); //Guarda a informação obtida da conversão
-
-            /* * Funsão desenvolvida para verificar o nível de tensão no Port AN0, no qual verificará se existe expansão conectada
+        SetChanADC(ADC_CH1); // Seta o canal analógico 1 (AN1) no qual verifica a existensia ou não de expansão por um divisor de tensão
+        ConvertADC(); //Inicia conversão ADC
+        while(BusyADC()); // Aguarda a finalização da conversão
+        tensao = ReadADC(); //Guarda a informação obtida da conversão
+        /* * Funsão desenvolvida para verificar o nível de tensão no Port AN0, no qual verificará se existe expansão conectada
                  e o tamanho da mesma, de acordo com os seguintes parametros:
 
                   -> Sem Expansão:
@@ -184,43 +186,46 @@ char config_expansao( char leitura )
                   -> Expansão de 20 Celulas:
                   Nível de tensão na faixa de 1,5 a 3,0V. Idealmente deve estar em 2,3V (Conforme divisor de tensão utilizado)
 
-                  -> Região de incerteza:
+                  -> Região de incerteza/Erro de leitura:
                   Nível de tensão nas faixas de 1,0 a 1,5V e 3,0 a 3,5V;
                   Para essa situação, o software irá reverificar o nível de tensão novamente, caso caia na região de incerteza por
                   três vezes seguidas, irá selecionar o módulo Sem Expansão e informar o erro ao Alto Nível;
 
-            */
-            // Sem Expanssão (10 Celulas)
-            if (tensao >= 717) //Verifica se a tensão da porta AN0 é maior que 3,5V (717/1024*5V=3,501V)
+        */
+        // Sem Expanssão (10 Celulas)
+        if (tensao >= 717) //Verifica se a tensão da porta AN0 é maior que 3,5V (717/1024*5V=3,501V)
+        {
+            if(tamanhoDeExpansao = '0')
             {
-                tamanhoDeExpansao = '0';
-                return '0';
+                return 0;
             }
-            // Expanssão no tamanho pequeno (10 + 10 Celulas = 20 )
-            else if (tensao <= 205) //Verifica se a tensão da porta AN0 é menor que 1V (205/1024*5V=1,001V) (O ideal é que na porta tenha 0V)
-            {
-                tamanhoDeExpansao = '1';
-                return '1';
-            }
-            // Expanssão no tamanho máximo (10 + 20 Celulas)
-            else if (tensao >= 307 && tensao <= 614) //Verifica se a tensão da porta AN0 é maior que 1,5V (307/1024*5=1,499V) e menor que 3V (614/1024*5=2,998V)
-            {
-                tamanhoDeExpansao = '2';
-                return '2';
-            }
-            // Região de incerteza
-            // O ideal é que esta tensão seja de 2,5V na Porta (Talvez colocar regiões de incerteza (menor que 1V (Ideal 0V) Exp10; 1-1,5V Incerteza; 1,5-3V EXP20 (Ideal 2,3V); 3-3,5V Incerteza; Maior q 3,5V Sem EXP (Ideal 4,5V);
-            if(erroDeLeitura=2)//Na terceira vez que ocorre a leitura, sem que haja um valor correto de expansão
-            {
-                tamanhoDeExpansao = 'X';
-                return 'X';
-            }
-            erroDeLeitura++;
+            tamanhoDeExpansao = '0';
         }
-    }
-    else // Leitura do tamanho da expansão
-    {
-        return tamanhoDeExpansao;
+        // Expanssão no tamanho pequeno (10 + 10 Celulas = 20 )
+        else if (tensao <= 205) //Verifica se a tensão da porta AN0 é menor que 1V (205/1024*5V=1,001V) (O ideal é que na porta tenha 0V)
+        {
+            if(tamanhoDeExpansao = '1')
+            {
+                return 0;
+            }
+            tamanhoDeExpansao = '1';
+        }
+        // Expanssão no tamanho máximo (10 + 20 Celulas)
+        else if (tensao >= 307 && tensao <= 614) //Verifica se a tensão da porta AN0 é maior que 1,5V (307/1024*5=1,499V) e menor que 3V (614/1024*5=2,998V)
+        {
+            if(tamanhoDeExpansao = '2')
+            {
+                return 0;
+            }
+            tamanhoDeExpansao = '2';
+        }
+        // Erro de leitura
+        if(numeroDeVericacao > 1) //Caso o processo faça mais que 3 mediçoes no ADC sem fazer 2 medidas consecutivas iguais, será informado erro
+        {
+            tamanhoDeExpansao = 'X';
+            return 0;
+        }
+        numeroDeVericacao++;
     }
 }
 
