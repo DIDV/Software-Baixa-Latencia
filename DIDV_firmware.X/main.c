@@ -91,9 +91,9 @@ int processa_controle( char controle )
         putc_cdc(' ');
         inicia_motores(0,64,3687);
     }
-    else if(controle == 0x30) // Caracter '0' será dados recebidos
+    else if(controle == 0x40) // Caracter '@' será dados recebidos
     {
-        processa_dado('0');
+        processa_dado('@');
     }
     else if(controle == 0x31) // Caracter '1' será dados pre programados
     {
@@ -116,9 +116,11 @@ int processa_controle( char controle )
 int processa_dado( char dado )
 {
     char data[10];
+    char confirmacao;
+    unsigned short indice = 0;
     if(dado == '1')
     {
-    /* Ja' nesse caso, o byte enviado sera identico ao recebido. */
+        //
         data[0]='?';//? = 0b00111111
         data[1]='0';//0 = 0b00110000
         data[2]='0';
@@ -129,15 +131,30 @@ int processa_dado( char dado )
         data[7]='0';
         data[8]='0';
         data[9]='?';
+        ativa_dados(data); // Ativa os dados predeterminados
+        putc_cdc('K'); //Teste Point
     }
-    else if(dado == '0')
+    else if(dado == '@')
     {
-
+        putc_cdc('D'); //Teste Ponit
+        while(indice<10)
+        {
+            data[indice]=recebe_dado_usb();
+            putc_cdc('-'); //Teste Point
+            indice++;
+        }
+        putc_cdc('Y'); //Teste Ponit
+        confirmacao=recebe_dado_usb();
+        if(confirmacao!='A') // 0x41 - Caracter 'A' no qual define o final da transmissão
+        {
+            putc_cdc('E');  //Erro de transmissão
+        }
+        else
+        {
+            ativa_dados(data); // Ativa os dados recebidos
+            putc_cdc('K'); // Traminssão OK
+        }
     }
-    ativa_dados(data);
-    putc_cdc(' ');
-    putc_cdc('d');
-
     return 1;
 }
 
