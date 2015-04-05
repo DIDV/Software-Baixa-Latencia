@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=cdc_pic18f4550_5
+PROJECTNAME=DIDV_firmware.X
 
 # Active Configuration
 DEFAULTCONF=default

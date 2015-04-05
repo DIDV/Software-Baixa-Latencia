@@ -10,9 +10,9 @@ CND_CONF=default
 CND_DISTDIR=dist
 TMPDIR=build/${CND_CONF}/${IMAGE_TYPE}/tmp-packaging
 TMPDIRNAME=tmp-packaging
-OUTPUT_PATH=dist/${CND_CONF}/${IMAGE_TYPE}/cdc_pic18f4550_5.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
-OUTPUT_BASENAME=cdc_pic18f4550_5.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
-PACKAGE_TOP_DIR=cdcpic18f45505/
+OUTPUT_PATH=dist/${CND_CONF}/${IMAGE_TYPE}/DIDV_firmware.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
+OUTPUT_BASENAME=DIDV_firmware.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
+PACKAGE_TOP_DIR=didvfirmware.x/
 
 # Functions
 function checkReturnCode
@@ -57,15 +57,15 @@ mkdir -p ${TMPDIR}
 
 # Copy files and create directories and links
 cd "${TOP}"
-makeDirectory ${TMPDIR}/cdcpic18f45505/bin
+makeDirectory ${TMPDIR}/didvfirmware.x/bin
 copyFileToTmpDir "${OUTPUT_PATH}" "${TMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}" 0755
 
 
 # Generate tar file
 cd "${TOP}"
-rm -f ${CND_DISTDIR}/${CND_CONF}/package/cdcpic18f45505.tar
+rm -f ${CND_DISTDIR}/${CND_CONF}/package/didvfirmware.x.tar
 cd ${TMPDIR}
-tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/package/cdcpic18f45505.tar *
+tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/package/didvfirmware.x.tar *
 checkReturnCode
 
 # Cleanup

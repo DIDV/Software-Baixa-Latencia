@@ -73,21 +73,7 @@ void rotina_usb()
          * sera' encerrado nesse ponto. */
         if ( byte_recebido == 0xFF ) return;
 
-        /* A variavel tipo_byte determinara se o byte conte'm um dado (00),
-         * que deve ser enviado para os caracteres braille, ou um
-         * controle, que deve ser interpretado e executado pelas funcoes
-         * adequadas. */
-        tipo_byte = byte_recebido & mascara_tipo_byte;
-
-        /* A variavel valor_byte contem o restante do byte, ignorando os dois
-         * bits de controle. Exceto por uma questao de padrao, e' meio inutil,
-         * na verdade. */
-        valor_byte = byte_recebido & mascara_valor_byte;
-
-        if ( tipo_byte ) // se tipo_byte for diferente de zero...
-            processa_controle(byte_recebido);
-        else
-            processa_dado(valor_byte);
+        processa_controle(byte_recebido);
 }
 
 
