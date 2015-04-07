@@ -242,59 +242,51 @@ void config_pic(void)
 */
 void config_expansao(void)
 {
-    unsigned short tensao;              // Armazena o valor da conversão ADC feita;
-    unsigned short numeroDeVericacao=0; // Sinalização de erro de leitura;
+    unsigned short tensao;                  // Armazena o valor da conversão ADC feita;
+    unsigned short numeroDeVerificacao = 0; // Sinalização de erro de leitura;
 
+    SetChanADC(ADC_CH1);            // Seta o canal analógico 1 (AN1) no qual verifica a existencia ou não de expansão por um divisor de tensão
+    ConvertADC();                   //Inicia conversão ADC
+    while(BusyADC());               // Aguarda a finalização da conversão
+    tensao = ReadADC();             //Guarda a informação obtida da conversão
     while(1)
     {
-        putc_cdc('0');
-        SetChanADC(ADC_CH1);            // Seta o canal analógico 1 (AN1) no qual verifica a existencia ou não de expansão por um divisor de tensão
-        ConvertADC();                   //Inicia conversão ADC
-        while(BusyADC());               // Aguarda a finalização da conversão
-        tensao = ReadADC();             //Guarda a informação obtida da conversão
-
         // Sem Expansão (10 Celulas)
-        if (tensao >= 717)              //Verifica se a tensão da porta AN0 é maior que 3,5V (717/1024*5V=3,501V)
+        if(tensao > 716)              //Verifica se a tensão da porta AN0 é maior que 3,5V (717/1024*5V=3,501V)
         {
-            putc_cdc('1');
             if(tamanhoDeExpansao == '0')
             {
-                putc_cdc('2');
                 return;
             }
-            tamanhoDeExpansao == '0';
+            tamanhoDeExpansao = '0';
         }
         // Expansão no tamanho pequeno (10 + 10 Celulas = 20 )
-        else if (tensao <= 205)         //Verifica se a tensão da porta AN0 é menor que 1V (205/1024*5V=1,001V) (O ideal é que na porta tenha 0V)
+        else if(tensao < 206)         //Verifica se a tensão da porta AN0 é menor que 1V (205/1024*5V=1,001V) (O ideal é que na porta tenha 0V)
         {
-            putc_cdc('3');
             if(tamanhoDeExpansao == '1')
             {
-                putc_cdc('4');
                 return;
             }
-            tamanhoDeExpansao == '1';
+            tamanhoDeExpansao = '1';
         }
-        // Expansão no tamanho máximo (10 + 20 Celulas)
-        else if (tensao >= 307 && tensao <= 614) //Verifica se a tensão da porta AN0 é maior que 1,5V (307/1024*5=1,499V) e menor que 3V (614/1024*5=2,998V)
+        // Expansão no tamanho máximo (10 + 20 Celulas = 30)
+        else if(tensao > 306 && tensao < 615) //Verifica se a tensão da porta AN0 é maior que 1,5V (307/1024*5=1,499V) e menor que 3V (614/1024*5=2,998V))
         {
-            putc_cdc('5');
             if(tamanhoDeExpansao == '2')
             {
-                putc_cdc('6');
                 return;
             }
-            tamanhoDeExpansao == '2';
+            tamanhoDeExpansao = '2';
         }
-        // Erro de leitura
-        if(numeroDeVericacao > 1)       //Caso o processo faça mais que 3 mediçoes no ADC sem fazer 2 medidas consecutivas iguais, será informado erro
+        else
         {
-            putc_cdc('7');
-            tamanhoDeExpansao = 'X';
-            return;
+            if(numeroDeVerificacao > 1) //Caso o processo faça mais que 3 mediçoes no ADC sem fazer 2 medidas consecutivas iguais, será informado erro
+            {
+                tamanhoDeExpansao = 'X';
+                return;
+            }
         }
-        putc_cdc('8');
-        numeroDeVericacao++;
+        numeroDeVerificacao++;
     }
 }
 
