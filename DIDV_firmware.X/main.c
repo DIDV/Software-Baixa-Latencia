@@ -5,7 +5,11 @@
 #include "usb_functions.h"
 #include <delays.h>
 
-char tamanhoDeExpansao = '-';       // Variavel que armazena o tamanho da expansão,inicialmente indica que nunca foi analisada ('-');
+//\TODO: modificar para valores reais
+#define PINO_ALTO 3700  // Define o valor do PWM para nível lógico alto;
+#define PINO_BAIXO 3800 // Define o valor do PWM para nível lógico baixo;
+
+char tamanhoDeExpansao = '-'; // Variavel que armazena o tamanho da expansão
 char data[10];                      // Declara o buffer de dados para 60 motores;
 
 //Interrupção de alta prioridade para funcionamento do TLC5940;
@@ -179,7 +183,8 @@ int processa_dado( char controle )
         else
         {
             ativa_dados(data);              // Ativa os dados recebidos;
-            putc_cdc('K');                  // Traminssão OK - Sinaliza a rasp que a transmissão foi um sucesso e os dados foram ativados;
+            
+            putc_cdc('K');                  // Traminssão OK - Sinaliza a rasp que a transmissão foi um sucesso;
         }
     }
     else if(controle == '+')                // Responde o último dado recebido;
@@ -311,10 +316,7 @@ void ativa_dados( char dados[10])
 {
     int valor;
     char mascara;                       // Mascara usada para verificar bit a bit se o canal deve ser acionado ou não;
-    unsigned short brightness1=3800;    // Define o valor do PWM para nível lógico baixo;
-    unsigned short brightness2=3700;    // Define o valor do PWM para nível lógico alto;
     unsigned short celula = 0;          // Define qual celula esta sendo trabalhada;
-
     while(celula<10)                    // Trabalha uma celula de cada vez (10 celulas);
     {
         mascara = 0b00100000;           // Define mascará p/ um bit, começando do bit 5;
@@ -323,11 +325,11 @@ void ativa_dados( char dados[10])
         {
             if((dados[celula] & mascara) == 0b00000000) // Bit analisado for zero;
             {
-                setGrayScaleValue(celula*6+valor, brightness1); // Aciona em determinada celula, em determinado canal o valor '0';
+                setGrayScaleValue(celula*6+valor, PINO_BAIXO); // Aciona em determinada celula, em determinado canal o valor '0';
             }
             else                        // Bit analisado for 1;
             {
-                setGrayScaleValue(celula*6+valor, brightness2); // Aciona em determinada celula, em determinado canal o valor '1';
+                setGrayScaleValue(celula*6+valor, PINO_ALTO); // Aciona em determinada celula, em determinado canal o valor '1';
             }
             mascara = mascara >> 1;     // Rotaciona a mascara p/ o proximo canal/bit;
             valor++;                    // Altera p/ o proximo canal da celula (0 a 5);

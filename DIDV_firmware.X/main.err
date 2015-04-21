@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_firmware.X\main.c 45 : call of function without prototype
 Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_firmware.X\main.c 47 : call of function without prototype
 Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_firmware.X\main.c 49 : call of function without prototype
@@ -19,3 +20,33 @@ Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_fi
 Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_firmware.X\main.c 189 : call of function without prototype
 Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_firmware.X\main.c 192 : call of function without prototype
 Warning[2058] C:\Users\Murilo\Desktop\Murilo\TCC\Software-Baixa-Latencia\DIDV_firmware.X\main.c 349 : call of function without prototype
+=======
+Warning[2058] C:\Users\VitorHugo\Documents\FEI\TCC_Local\Pic-Servos\DIDV_firmware.X\main.c 40 : call of function without prototype
+Warning[2058] C:\Users\VitorHugo\Documents\FEI\TCC_Local\Pic-Servos\DIDV_firmware.X\main.c 42 : call of function without prototype
+Warning[2058] C:\Users\VitorHugo\Documents\FEI\TCC_Local\Pic-Servos\DIDV_firmware.X\main.c 44 : call of function without prototype
+Warning[2058] C:\Users\VitorHugo\Documents\FEI\TCC_Local\Pic-Servos\DIDV_firmware.X\main.c 45 : call of function without prototype
+Warning[2058] C:\Users\VitorHugo\Documents\FEI\TCC_Local\Pic-Servos\DIDV_firmware.X\main.c 50 : call of function without prototype
+Warning[2058] C:\Users\VitorHugo\Documents\FEI\TCC_Local\Pic-Servos\DIDV_firmware.X\main.c 66 : call of function without prototype
+Warning[2058] C:\Users\VitorHugo\Documents\FEI\TCC_Local\Pic-Servos\DIDV_firmware.X\main.c 75 : call of function without prototype
+Warning[2058] C:\Users\VitorHugo\Documents\FEI\TCC_Local\Pic-Servos\DIDV_firmware.X\main.c 107 : call of function without prototype
+Warning[2058] C:\Users\VitorHugo\Documents\FEI\TCC_Local\Pic-Servos\DIDV_firmware.X\main.c 108 : call of function without prototype
+Warning[2058] C:\Users\VitorHugo\Documents\FEI\TCC_Local\Pic-Servos\DIDV_firmware.X\main.c 112 : call of function without prototype
+Warning[2058] C:\Users\VitorHugo\Documents\FEI\TCC_Local\Pic-Servos\DIDV_firmware.X\main.c 113 : call of function without prototype
+Warning[2058] C:\Users\VitorHugo\Documents\FEI\TCC_Local\Pic-Servos\DIDV_firmware.X\main.c 117 : call of function without prototype
+Warning[2058] C:\Users\VitorHugo\Documents\FEI\TCC_Local\Pic-Servos\DIDV_firmware.X\main.c 118 : call of function without prototype
+Warning[2058] C:\Users\VitorHugo\Documents\FEI\TCC_Local\Pic-Servos\DIDV_firmware.X\main.c 122 : call of function without prototype
+Warning[2058] C:\Users\VitorHugo\Documents\FEI\TCC_Local\Pic-Servos\DIDV_firmware.X\main.c 123 : call of function without prototype
+Warning[2058] C:\Users\VitorHugo\Documents\FEI\TCC_Local\Pic-Servos\DIDV_firmware.X\main.c 127 : call of function without prototype
+Warning[2058] C:\Users\VitorHugo\Documents\FEI\TCC_Local\Pic-Servos\DIDV_firmware.X\main.c 128 : call of function without prototype
+Warning[2058] C:\Users\VitorHugo\Documents\FEI\TCC_Local\Pic-Servos\DIDV_firmware.X\main.c 129 : call of function without prototype
+Warning[2058] C:\Users\VitorHugo\Documents\FEI\TCC_Local\Pic-Servos\DIDV_firmware.X\main.c 157 : call of function without prototype
+Warning[2058] C:\Users\VitorHugo\Documents\FEI\TCC_Local\Pic-Servos\DIDV_firmware.X\main.c 161 : call of function without prototype
+Warning[2058] C:\Users\VitorHugo\Documents\FEI\TCC_Local\Pic-Servos\DIDV_firmware.X\main.c 165 : call of function without prototype
+Warning[2058] C:\Users\VitorHugo\Documents\FEI\TCC_Local\Pic-Servos\DIDV_firmware.X\main.c 168 : call of function without prototype
+Warning[2058] C:\Users\VitorHugo\Documents\FEI\TCC_Local\Pic-Servos\DIDV_firmware.X\main.c 174 : call of function without prototype
+Warning[2058] C:\Users\VitorHugo\Documents\FEI\TCC_Local\Pic-Servos\DIDV_firmware.X\main.c 179 : call of function without prototype
+Warning[2058] C:\Users\VitorHugo\Documents\FEI\TCC_Local\Pic-Servos\DIDV_firmware.X\main.c 306 : call of function without prototype
+Warning[2058] C:\Users\VitorHugo\Documents\FEI\TCC_Local\Pic-Servos\DIDV_firmware.X\main.c 316 : call of function without prototype
+Warning[2058] C:\Users\VitorHugo\Documents\FEI\TCC_Local\Pic-Servos\DIDV_firmware.X\main.c 321 : call of function without prototype
+Warning[2058] C:\Users\VitorHugo\Documents\FEI\TCC_Local\Pic-Servos\DIDV_firmware.X\main.c 327 : call of function without prototype
+>>>>>>> bdb0ee0fee4822699607080a80db1bdcab60845a
