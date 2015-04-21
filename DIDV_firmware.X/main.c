@@ -3,9 +3,12 @@
 #include <timers.h>
 #include <adc.h>
 #include "usb_functions.h"
+#include <delays.h>
 
-char tamanhoDeExpansao = '-'; // Variavel que armazena o tamanho da expansão
+char tamanhoDeExpansao = '-';       // Variavel que armazena o tamanho da expansão,inicialmente indica que nunca foi analisada ('-');
+char data[10];                      // Declara o buffer de dados para 60 motores;
 
+//Interrupção de alta prioridade para funcionamento do TLC5940;
 void high_isr(void);
 #pragma code high_vector=0x08
  void interrupt_at_high_vector(void)
@@ -20,19 +23,21 @@ void high_isr(void);
  {
      if(INTCONbits.TMR0IF)
      {
-         WriteTimer0(XLATCOUNTTIMER); //23531 = 500ms
+         WriteTimer0(XLATCOUNTTIMER);
          processXLATinterrupt();
          INTCONbits.TMR0IF=0;
      }
 }
 
-int processa_controle( char controle );
-int processa_dado( char dado );
-char recebe_dado_usb();
-void inicia_motores();
-void config_pic();
-void config_expansao();
-void ativa_dados(char dados[10]);
+// Declarações das funções;
+int processa_controle( char controle );             // Função que toma as decisões de acordo com a solicitação do alto nível;
+int processa_dado( char dado );                     // Recebe e processa os DADOS BRAILLE
+char recebe_dado_usb();                             // Verifica se algum dado foi recebido do alto nível;
+void inicia_motores();                              // Função para colocar todos os motores em nível alto ou baixo;
+void config_pic();                                  // Configura os ports, timers, etc.
+void config_expansao();                             // Verifica o tamnha da expansão conectada, caso exista uma;
+void ativa_dados(char dados[10]);                   // Aciona os motores de acordo com os dados;
+void vibracall_motor (unsigned short tempo);        // Função para vibrar um motor, de acordo com o tempo inserido;
 
 void main(void)
 {
@@ -62,20 +67,20 @@ char recebe_dado_usb()
     do
     {
         /*Maquina de estados do USB, no qual verifica se o mesmo esta configurado
-         e executa a inclusão e exclusão de dados nos buffer de entrada e saída.*/
+        e executa a inclusão e exclusão de dados nos buffer de entrada e saída.*/
         usb_handler();
         
         /* O valor 0xFF funciona como padrao para a variavel byte_recebido,
-         * e significa que nenhum byte foi recebido pelo PIC. */
+        e significa que nenhum byte foi recebido pelo PIC. */
         byte_recebido = 0xFF;
 
         /* Caso tenha algum char no buffer de entrada do PIC,
-         * esse sera' transferido para a variavel byte_recebido.
-         * Caso nao, o valor inicial 0xFF sera' mantido. */
+        esse sera' transferido para a variavel byte_recebido.
+        Caso nao, o valor inicial 0xFF sera' mantido. */
         poll_getc_cdc(&byte_recebido);
 
         /* Se nenhum byte tiver sido recebido, esse ciclo do loop
-         * sera' encerrado nesse ponto. */
+        sera' encerrado nesse ponto. */
     } while ( byte_recebido == 0xFF );
 
     return byte_recebido;                   // Retorna o dado recebido;
@@ -89,44 +94,46 @@ char recebe_dado_usb()
  com o comando recebido da Rasp;*/
 int processa_controle( char controle )
 {
-    switch(controle)
+    switch(controle)                // Seleção do comando
     {
-        case 0x40:              // Caracter '@' ou 0x40 - Processo de recebimento de dados;
-            processa_dado('@');
+        case 0x40:                  // Caracter '@' ou 0x40 - Processo de recebimento de dados;
+            processa_dado('@');     // Chama função processa_dado com objetivo de transmitir o texto que será exibido na linha;
             break;
 
-        case 0x5F:              // Caracter '_' ou 0x5F - Processo de dados teste pré-estabelecidos;
-            processa_dado('_');
+        case 0x2B:                  // Caracter '+' ou 0x2B - Responde com o último valor que foi aplicado na linha;
+            processa_dado('+');     // Chama função processa_dado com objetivo de informar o alto nivel qual foi o útimo dado transmitido;
             break;
 
-        case 0x51:              //Caracter 'Q' ou 0x51 - Processo de verificação do tamanho da expansão;
-            /* O comando putc_cdc envia o byte controle para o buffer de saida do
-             * PIC. Nesse caso, esse byte sera diferente do enviado para o PIC, pois
-             * os dois bits mais significativos foram transformados em 00 e, se fossem
-             * iguais a 00 inicialmente, essa funcao nao teria sido chamada. */
-            putc_cdc(tamanhoDeExpansao);
-            putc_cdc('Q');      // Test Point
+        case 0x5F:                  // Caracter '_' ou 0x5F - Processo de dados teste pré-estabelecidos (Comando de Teste);
+            processa_dado('_');     // Chama função processa_dado com objetivo de acionar dados pré-estabelecidos;
             break;
 
-        case 0x45:              // Caracter 'E' ou 0x45 - Processo de reconfiguração de expansão;
-            config_expansao();
-            putc_cdc('E');      // Test Point
+        case 0x51:                  // Caracter 'Q' ou 0x51 - Processo de verificação do tamanho da expansão;
+            putc_cdc(tamanhoDeExpansao);    // Responde com o tamanho atual da expansão (conforme ultima analise feita);
+            /* O comando putc_cdc envia um byte (Char) para o buffer de saida do PIC, de modo que o alto nível possa receber esta resposta;  */
             break;
 
-        case 0x48:              // Caracter 'H' ou 0x48 - Coloca todos os motores em nível alto;
-            inicia_motores(0,64,3687);
-            putc_cdc('H');      //Test Point
+        case 0x45:                  // Caracter 'E' ou 0x45 - Processo de reconfiguração de expansão;
+            config_expansao();      // Chamaa função de reconfiguração de expansão;
+            putc_cdc('K');          // Confirma ao alto nível que a verificação de expansão foi refeita;
             break;
 
-        case 0x4C:              // Caracter 'L' ou 0x4C - Coloca todos os motores em nível baixo;
-            inicia_motores(0,64,3891);
-            putc_cdc('L');      //Test Point
+        case 0x48:                  // Caracter 'H' ou 0x48 - Coloca todos os motores em nível alto;
+            inicia_motores(0,64,3687);  //Aciona todos os motores em determinado PWM;
+            putc_cdc('K');          //Confirma ao alto nível que os motores foram acionados;
             break;
 
-        default:                // Não faz nada e retorna para receber proximo controle;
-            putc_cdc('N');
-            putc_cdc('o');
-            putc_cdc('p');
+        case 0x4C:                  // Caracter 'L' ou 0x4C - Coloca todos os motores em nível baixo;
+            inicia_motores(0,64,3891);  //Aciona todos os motores em determinado PWM;
+            putc_cdc('K');          //Confirma ao alto nível que os motores foram acionados;
+            break;
+
+        case 0x21:                  //Caracter '!' ou 0x21 - Aciona o motor pelo tempo de 5 segundo;
+            vibracall_motor(5000);    //Aciona o vibracall por 5 Segundos (tempo máximo permitido);
+            break;
+
+        default:                    // Não faz nada e retorna para receber proximo controle;
+            putc_cdc('N');          // Indica ao alto nível que o controle solicitado não existe;
 
     }
     return 1;
@@ -135,13 +142,13 @@ int processa_controle( char controle )
 
 /*Função de recebimento e aplicação de dados.
  Dependendo do controle selecionado, colocará um valor padrão de dados ou
- receberá os dados da Rasp. Posteriormente aplicará os 60 valores recebidos*/
-int processa_dado( char dado )
+ receberá os dados da Rasp. Posteriormente aplicará os 60 valores recebidos.
+ Também permite transmitir o último dado recebido ao alto nível;*/
+int processa_dado( char controle )
 {
-    char data[10];                          // Declara o buffer de dados para 60 motores;
     char confirmacao;                       // Buffer que receberá a indicaçao de final de transmissão;
     unsigned short indice = 0;              // Declara uma variavel para auxiliar no recebimento do buffer (Vetor)
-    if(dado == '_')                         // Testes de motor com valores pré-estabelecidos
+    if(controle == '_')                     // Testes de motor com valores pré-estabelecidos
     {
         data[0]='?';                        //? = 0b00111111 -> Motores terão os valores 111 111
         data[1]='0';                        //0 = 0b00110000 -> Motores terão os valores 110 000
@@ -154,21 +161,17 @@ int processa_dado( char dado )
         data[8]='0';
         data[9]='?';
         ativa_dados(data);                  // Ativa os dados predeterminados;
-        putc_cdc('K');                      // Test Point
+        putc_cdc('K');                      //Confirma ao alto nível que os motores foram acionados;
     }
-    else if(dado == '@')                    // Recebimento e aplicação de dados;
+    else if(controle == '@')                // Recebimento e aplicação de dados;
     {
-        putc_cdc('D');                      // Test Ponit
         while(indice<10)                    // Processo de recebimento de 10 bytes da Rasp;
         {
             data[indice]=recebe_dado_usb(); // Chama rotina de recebimento de um byte e o armazena;
-            putc_cdc('-');                  // Test Point
             indice++;                       // Incrementa o vetor;
         }
-        putc_cdc('Y');                      // Test Ponit
         confirmacao=recebe_dado_usb();      // Chama rotina de recebimentode um byte e o armazena;
-        /*Verifica se o byte recebido por último é igual ao byte de finalização
-         * de transmissão; */
+        /*Verifica se o byte recebido por último é igual ao byte de finalização de transmissão; */
         if(confirmacao!='A')                // 0x41 - Caracter 'A' no qual define o final da transmissão;
         {
             putc_cdc('E');                  //Erro de transmissão - Sinaliza a rasp que houve um erro;
@@ -176,15 +179,24 @@ int processa_dado( char dado )
         else
         {
             ativa_dados(data);              // Ativa os dados recebidos;
-            putc_cdc('K');                  // Traminssão OK - Sinalizaarasp que a transmissão foi um sucesso;
+            putc_cdc('K');                  // Traminssão OK - Sinaliza a rasp que a transmissão foi um sucesso e os dados foram ativados;
         }
+    }
+    else if(controle == '+')                // Responde o último dado recebido;
+    {
+        while(indice<10)                    // Processo de transmissão de 10 bytes para Rasp;
+        {
+            putc_cdc(data[indice]);         // Transmite o byte da posição indice;
+            indice++;                       // Incrementa posição indice;
+        }
+        putc_cdc('K');                      // Informa final de transmissão;
     }
     return 1;                               //Retorna para aguardar os proximos comandos;
 }
 
 
 /*Função de inicialização dos motore, no qual pode ser usada para colocar todos
- * os motoroes em High ou Low ;*/
+ os motoroes em High ou Low ;*/
 void inicia_motores( unsigned char inicial, unsigned char final, int quanto )
 {
     unsigned char canal;
@@ -199,7 +211,7 @@ void inicia_motores( unsigned char inicial, unsigned char final, int quanto )
 /*Configuração inicial do Pic*/
 void config_pic(void)
 {
-    /* Configura o port RA1/AN1 como port de entrada analógico
+    /* Configura o port AN0, 1, 2 e 3 como port de entrada analógico
      * As referências de tensão usadas são as internas do PIC (0V e 5V)
      * Este port será usado para verificação de expansão, no qual
      será feito por um divisor de tensão que indicará qual expansão
@@ -303,7 +315,6 @@ void ativa_dados( char dados[10])
     unsigned short brightness2=3700;    // Define o valor do PWM para nível lógico alto;
     unsigned short celula = 0;          // Define qual celula esta sendo trabalhada;
 
-    putc_cdc(' ');                      // Test Point;
     while(celula<10)                    // Trabalha uma celula de cada vez (10 celulas);
     {
         mascara = 0b00100000;           // Define mascará p/ um bit, começando do bit 5;
@@ -313,18 +324,28 @@ void ativa_dados( char dados[10])
             if((dados[celula] & mascara) == 0b00000000) // Bit analisado for zero;
             {
                 setGrayScaleValue(celula*6+valor, brightness1); // Aciona em determinada celula, em determinado canal o valor '0';
-                putc_cdc('0');          // Test Point;
             }
             else                        // Bit analisado for 1;
             {
                 setGrayScaleValue(celula*6+valor, brightness2); // Aciona em determinada celula, em determinado canal o valor '1';
-                putc_cdc('1');          // Test Point;
             }
             mascara = mascara >> 1;     // Rotaciona a mascara p/ o proximo canal/bit;
             valor++;                    // Altera p/ o proximo canal da celula (0 a 5);
         }
         celula++;                       // Altera p/ a proxima celula (0 a 9);
-        putc_cdc(' ');                  // Test Point
     }
     updateTlc5940();                    // Atualiza de uma única vez todos os canais nos TLCs;
+}
+
+/* Vibra um motor com tempos multiplos de 1mSeg;
+/ Chamar a função de acordo com quantas vezes gostaria de esperar 1 mSeg;               */
+void vibracall_motor (unsigned short tempo)
+{
+    if(tempo > 5000)            // Impede que coloquem tempos maiores que 5 segundos, pois paraliza todo o hardware durante esse período;
+    {
+        tempo = 5000;
+    }
+    PORTDbits.RD5 = 1;          // Aciona saída do vibracall
+    Delay_ms(tempo);            // Aguarda Tempo mSeg
+    PORTDbits.RD5 = 0;          // Desliga saída do vibracall
 }
