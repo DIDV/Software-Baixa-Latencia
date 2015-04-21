@@ -3,11 +3,10 @@
 #include <timers.h>
 #include <adc.h>
 #include "usb_functions.h"
-#include <delays.h>
 
 //\TODO: modificar para valores reais
-#define PINO_ALTO 3700  // Define o valor do PWM para nível lógico alto;
-#define PINO_BAIXO 3800 // Define o valor do PWM para nível lógico baixo;
+#define PINO_ALTO 3687  // Define o valor do PWM para nível lógico alto;
+#define PINO_BAIXO 3891 // Define o valor do PWM para nível lógico baixo;
 
 char tamanhoDeExpansao = '-'; // Variavel que armazena o tamanho da expansão
 char data[10];                      // Declara o buffer de dados para 60 motores;
@@ -34,8 +33,8 @@ void high_isr(void);
 }
 
 // Declarações das funções;
-int processa_controle( char controle );             // Função que toma as decisões de acordo com a solicitação do alto nível;
-int processa_dado( char dado );                     // Recebe e processa os DADOS BRAILLE
+void processa_controle( char controle );             // Função que toma as decisões de acordo com a solicitação do alto nível;
+void processa_dado( char dado );                     // Recebe e processa os DADOS BRAILLE
 char recebe_dado_usb();                             // Verifica se algum dado foi recebido do alto nível;
 void inicia_motores();                              // Função para colocar todos os motores em nível alto ou baixo;
 void config_pic();                                  // Configura os ports, timers, etc.
@@ -50,7 +49,7 @@ void main(void)
     initialiseTlc5940();                // Configuração do sistema de acionamento dos drivers;
     config_expansao();                  // Verificação de existencia de expansão;
     usb_install();                      // Inicialização do USB;
-    inicia_motores(0,64,3891);          // Configura os motores inicialmente p/ posição zero;
+    inicia_motores(0,64,PINO_BAIXO);          // Configura os motores inicialmente p/ posição zero;
     Delay_ms(3);                        // Aguarda um tempo antes de acionar o rele de alimentação dos motores
     PORTDbits.RD7 = 1;                  // Bit de acionamento de rele (alimentação dos motores)
 
@@ -96,7 +95,7 @@ char recebe_dado_usb()
 
 /* Função de controle, no qual toma as decisões do que será feito de acordo
  com o comando recebido da Rasp;*/
-int processa_controle( char controle )
+void processa_controle( char controle )
 {
     switch(controle)                // Seleção do comando
     {
@@ -123,12 +122,12 @@ int processa_controle( char controle )
             break;
 
         case 0x48:                  // Caracter 'H' ou 0x48 - Coloca todos os motores em nível alto;
-            inicia_motores(0,64,3687);  //Aciona todos os motores em determinado PWM;
+            inicia_motores(0,64,PINO_ALTO);  //Aciona todos os motores em determinado PWM;
             putc_cdc('K');          //Confirma ao alto nível que os motores foram acionados;
             break;
 
         case 0x4C:                  // Caracter 'L' ou 0x4C - Coloca todos os motores em nível baixo;
-            inicia_motores(0,64,3891);  //Aciona todos os motores em determinado PWM;
+            inicia_motores(0,64,PINO_BAIXO);  //Aciona todos os motores em determinado PWM;
             putc_cdc('K');          //Confirma ao alto nível que os motores foram acionados;
             break;
 
@@ -140,7 +139,7 @@ int processa_controle( char controle )
             putc_cdc('N');          // Indica ao alto nível que o controle solicitado não existe;
 
     }
-    return 1;
+    return;
 }
 
 
@@ -148,8 +147,9 @@ int processa_controle( char controle )
  Dependendo do controle selecionado, colocará um valor padrão de dados ou
  receberá os dados da Rasp. Posteriormente aplicará os 60 valores recebidos.
  Também permite transmitir o último dado recebido ao alto nível;*/
-int processa_dado( char controle )
+void processa_dado( char controle )
 {
+    //char data[10];                      // Declara o buffer de dados para 60 motores;
     char confirmacao;                       // Buffer que receberá a indicaçao de final de transmissão;
     unsigned short indice = 0;              // Declara uma variavel para auxiliar no recebimento do buffer (Vetor)
     if(controle == '_')                     // Testes de motor com valores pré-estabelecidos
@@ -196,7 +196,7 @@ int processa_dado( char controle )
         }
         putc_cdc('K');                      // Informa final de transmissão;
     }
-    return 1;                               //Retorna para aguardar os proximos comandos;
+    return;                               //Retorna para aguardar os proximos comandos;
 }
 
 
@@ -221,7 +221,7 @@ void config_pic(void)
      * Este port será usado para verificação de expansão, no qual
      será feito por um divisor de tensão que indicará qual expansão
      esta conectada;*/
-    OpenADC(ADC_FOSC_8 & ADC_RIGHT_JUST & ADC_20_TAD, ADC_CH1 & ADC_INT_OFF & ADC_VREFPLUS_VDD & ADC_VREFMINUS_VSS, ADC_2ANA);
+    OpenADC(ADC_FOSC_8 & ADC_RIGHT_JUST & ADC_20_TAD, ADC_CH1 & ADC_INT_OFF & ADC_VREFPLUS_VDD & ADC_VREFMINUS_VSS, ADC_4ANA);
     
     TRISA = 0x0F;       // PortA 0 a 3 configurados como entrada (analógica) e 4 a 7 como saída;
     TRISB = 0x00;       // PortB 0 a 7 como saída;
@@ -234,7 +234,6 @@ void config_pic(void)
     PORTD = 0x00;       // Todo portD com nível lógico baixo;
     PORTE = 0x00;       // Todo portE com nível lógico baixo;
 
-    ADCON1 = 0x0D;      // 0b0000 1011 - Port A0 até A3 como analógico (Bit 3,2,1 e 0) Setado como +5 e 0V (Bit 6 e 5)
     SSPCON1bits.SSPEN = 1;
 }
 
