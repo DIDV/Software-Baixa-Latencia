@@ -8,8 +8,13 @@
 #define PINO_ALTO 3687  // Define o valor do PWM para nível lógico alto;
 #define PINO_BAIXO 3891 // Define o valor do PWM para nível lógico baixo;
 
-char tamanhoDeExpansao = '-'; // Variavel que armazena o tamanho da expansão
+char tamanhoDeExpansao = '-';       // Variavel que armazena o tamanho da expansão;
 char data[10];                      // Declara o buffer de dados para 60 motores;
+char memory;                        // Buffer para armazenar o dado que irá piscar (função blink_cell);
+char ativa_blink = '0';             // Aciona o funcionamento da função blink_cell;
+char blink = '0';                   // Indica se a célula que irá piscar esta ou não mostrando o dado inicial;
+unsigned short cell_blink;          // Armazena qual das 10 células irá piscar (blink);
+long int blink_time = 0;            // Contador para que periodicamente pisque determinada célula;
 
 //Interrupção de alta prioridade para funcionamento do TLC5940;
 void high_isr(void);
@@ -33,14 +38,15 @@ void high_isr(void);
 }
 
 // Declarações das funções;
-void processa_controle( char controle );             // Função que toma as decisões de acordo com a solicitação do alto nível;
-void processa_dado( char dado );                     // Recebe e processa os DADOS BRAILLE
+void processa_controle( char controle );            // Função que toma as decisões de acordo com a solicitação do alto nível;
+void processa_dado( char dado );                    // Recebe e processa os DADOS BRAILLE
 char recebe_dado_usb();                             // Verifica se algum dado foi recebido do alto nível;
 void inicia_motores();                              // Função para colocar todos os motores em nível alto ou baixo;
 void config_pic();                                  // Configura os ports, timers, etc.
 void config_expansao();                             // Verifica o tamnha da expansão conectada, caso exista uma;
 void ativa_dados(char dados[10]);                   // Aciona os motores de acordo com os dados;
 void vibracall_motor (unsigned short tempo);        // Função para vibrar um motor, de acordo com o tempo inserido;
+void blink_cell(unsigned short cell);
 
 void main(void)
 {
@@ -49,7 +55,7 @@ void main(void)
     initialiseTlc5940();                // Configuração do sistema de acionamento dos drivers;
     config_expansao();                  // Verificação de existencia de expansão;
     usb_install();                      // Inicialização do USB;
-    inicia_motores(0,64,PINO_BAIXO);          // Configura os motores inicialmente p/ posição zero;
+    inicia_motores(0,64,PINO_BAIXO);    // Configura os motores inicialmente p/ posição zero;
     Delay_ms(3);                        // Aguarda um tempo antes de acionar o rele de alimentação dos motores
     PORTDbits.RD7 = 1;                  // Bit de acionamento de rele (alimentação dos motores)
 
@@ -57,7 +63,7 @@ void main(void)
     {
         byte_recebido = recebe_dado_usb();  // Recebe os dados vindos da rasp;
         processa_controle(byte_recebido);   // Envia o dado obtido para que o controle tome uma decisão;
-    } while(1);
+    }while(1);
 }
 
 
@@ -69,6 +75,15 @@ char recebe_dado_usb()
 
     do
     {
+        blink_time = blink_time + 1;        // Incrementa contador de blink;
+        if(blink_time == 500000)            // Verifica se já ocorreu 500.000 ciclos;
+        {
+            blink_time = 0;                 // Reseta contador;
+            if(ativa_blink == '1')          // Verifica se a função blink_cell esta ativa;
+            {
+                blink_cell(cell_blink);     // Chama função para piscar determinada célula (cell_blink);
+            }
+        }
         /*Maquina de estados do USB, no qual verifica se o mesmo esta configurado
         e executa a inclusão e exclusão de dados nos buffer de entrada e saída.*/
         usb_handler();
@@ -131,8 +146,56 @@ void processa_controle( char controle )
             putc_cdc('K');          //Confirma ao alto nível que os motores foram acionados;
             break;
 
+        //Comandos para piscar determinada célula, para que o deficiente possa identificar qual célula o ponteiro esta;
+        case 0xB0:                  // Comando de acionamento da função blink, para piscar a célula 0;
+            cell_blink = 0;         // Seta célula 0 para piscar;
+            ativa_blink = '1';      // Aciona o sistema de piscar (blink);
+            break;
+        case 0xB1:                  // Comando de acionamento da função blink, para piscar a célula 1;
+            cell_blink = 1;         // Seta célula 1 para piscar;
+            ativa_blink = '1';      // Aciona o sistema de piscar (blink);
+            break;
+        case 0xB2:                  // Comando de acionamento da função blink, para piscar a célula 2;
+            cell_blink = 2;         // Seta célula 2 para piscar;
+            ativa_blink = '1';      // Aciona o sistema de piscar (blink);
+            break;
+        case 0xB3:                  // Comando de acionamento da função blink, para piscar a célula 3;
+            cell_blink = 3;         // Seta célula 3 para piscar;
+            ativa_blink = '1';      // Aciona o sistema de piscar (blink);
+            break;
+        case 0xB4:                  // Comando de acionamento da função blink, para piscar a célula 4;
+            cell_blink = 4;         // Seta célula 4 para piscar;
+            ativa_blink = '1';      // Aciona o sistema de piscar (blink);
+            break;
+        case 0xB5:                  // Comando de acionamento da função blink, para piscar a célula 5;
+            cell_blink = 5;         // Seta célula 5 para piscar;
+            ativa_blink = '1';      // Aciona o sistema de piscar (blink);
+            break;
+        case 0xB6:                  // Comando de acionamento da função blink, para piscar a célula 6;
+            cell_blink = 6;         // Seta célula 6 para piscar;
+            ativa_blink = '1';      // Aciona o sistema de piscar (blink);
+            break;
+        case 0xB7:                  // Comando de acionamento da função blink, para piscar a célula 7;
+            cell_blink = 7;         // Seta célula 7 para piscar;
+            ativa_blink = '1';      // Aciona o sistema de piscar (blink);
+            break;
+        case 0xB8:                  // Comando de acionamento da função blink, para piscar a célula 8;
+            cell_blink = 8;         // Seta célula 8 para piscar;
+            ativa_blink = '1';      // Aciona o sistema de piscar (blink);
+            break;
+        case 0xB9:                  // Comando de acionamento da função blink, para piscar a célula 9;
+            cell_blink = 9;         // Seta célula 9 para piscar;
+            ativa_blink = '1';      // Aciona o sistema de piscar (blink);
+            break;
+        case 0xC0:
+            ativa_blink = '0';          //  Desliga o sistema de piscar (blink);
+            data[cell_blink] = memory;  // Retorna o caracter original no lugar da célula em branco;
+            ativa_dados(data);          // Ativa a nova informação nos motores;
+            blink = '0';                // Reseta o estado de blink;
+            break;
+
         case 0x21:                  //Caracter '!' ou 0x21 - Aciona o motor pelo tempo de 5 segundo;
-            vibracall_motor(5000);    //Aciona o vibracall por 5 Segundos (tempo máximo permitido);
+            vibracall_motor(5000);  //Aciona o vibracall por 5 Segundos (tempo máximo permitido);
             break;
 
         default:                    // Não faz nada e retorna para receber proximo controle;
@@ -149,9 +212,13 @@ void processa_controle( char controle )
  Também permite transmitir o último dado recebido ao alto nível;*/
 void processa_dado( char controle )
 {
-    //char data[10];                      // Declara o buffer de dados para 60 motores;
     char confirmacao;                       // Buffer que receberá a indicaçao de final de transmissão;
     unsigned short indice = 0;              // Declara uma variavel para auxiliar no recebimento do buffer (Vetor)
+    if((ativa_blink == '1') && (controle != '+'))   // Caso seja enviado uma nova trasmissão de dados
+    {
+        ativa_blink = '0';          // Desliga o sistema de piscar (blink);
+        blink = '0';                // Reseta o estado de blink
+    }
     if(controle == '_')                     // Testes de motor com valores pré-estabelecidos
     {
         data[0]='?';                        //? = 0b00111111 -> Motores terão os valores 111 111
@@ -349,4 +416,28 @@ void vibracall_motor (unsigned short tempo)
     PORTDbits.RD5 = 1;          // Aciona saída do vibracall
     Delay_ms(tempo);            // Aguarda Tempo mSeg
     PORTDbits.RD5 = 0;          // Desliga saída do vibracall
+}
+
+/*Função para piscar determinada célula do display braille;
+ Com essa função, o deficiente visual consegue descobrir qual célula
+ esta o ponteiro de escrita nos momentos de escrita/edição de texto; */
+void blink_cell(unsigned short cell)    // A variável cell indica qual das células irá piscar (0 até 9);
+{
+    char clear = 0x00;                  // A variável clear é um caracter em branco, no qual irá aparecer na célula que pisca;
+    if(data[cell] != clear)             // Se o dado na célula que irá piscar for diferente de zero, armazena em um buffer esse dado;
+    {
+        memory = data[cell];            // Armazenagem do dado que não deve ser perdido em um buffer alternativo;
+    }
+    if(blink == '0')                    // Verifica se determinada célula esta em branco ou com seu valor normal;
+    {
+        data[cell] = clear;             // Coloca um espaço em branco em determinada célula;
+        ativa_dados(data);              // Habilita o dado, alterando determinada célula por espaço em branco;
+        blink = '1';                    // Indica que determinada célula agora esta em branco;
+    }
+    else                                // Caso a célula já esteja em branco, retorna ao valor anterior;
+    {
+        data[cell] = memory;            // Retorna o caracter original no lugar da célula em branco;
+        ativa_dados(data);              // Habilita os dados originais;
+        blink = '0';                    // Indica que determinada célula agora esta com o dado original;
+    }
 }
