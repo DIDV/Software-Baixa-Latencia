@@ -5,8 +5,8 @@
 #include "usb_functions.h"
 
 //\TODO: modificar para valores reais
-#define PINO_ALTO 3687  // Define o valor do PWM para nível lógico alto;
-#define PINO_BAIXO 3891 // Define o valor do PWM para nível lógico baixo;
+#define PINO_ALTO 3791  // Define o valor do PWM para nível lógico alto; //3687
+#define PINO_BAIXO 3891 // Define o valor do PWM para nível lógico baixo; //3891
 
 char tamanhoDeExpansao = '-';       // Variavel que armazena o tamanho da expansão;
 char data[10];                      // Declara o buffer de dados para 60 motores;
@@ -15,6 +15,7 @@ char ativa_blink = '0';             // Aciona o funcionamento da função blink_ce
 char blink = '0';                   // Indica se a célula que irá piscar esta ou não mostrando o dado inicial;
 unsigned short cell_blink;          // Armazena qual das 10 células irá piscar (blink);
 long int blink_time = 0;            // Contador para que periodicamente pisque determinada célula;
+unsigned short persistencia = 0;        // Contador para manter o led um pouco mais tempo ligado.
 
 //Interrupção de alta prioridade para funcionamento do TLC5940;
 void high_isr(void);
@@ -33,6 +34,12 @@ void high_isr(void);
      {
          WriteTimer0(XLATCOUNTTIMER);
          processXLATinterrupt();
+         if(persistencia == 10)         // Mantem o LED que indica recebimento de controle ligado por um tempo maior;
+         {
+             PORTDbits.RD2 = 0;         // Desliga LED de indicação de recebimento de controle
+             persistencia = 0;          // Reseta contatador;
+         }
+         persistencia++;                // Incrementa contador;
          INTCONbits.TMR0IF=0;
      }
 }
@@ -58,6 +65,7 @@ void main(void)
     inicia_motores(0,64,PINO_BAIXO);    // Configura os motores inicialmente p/ posição zero;
     Delay_ms(3);                        // Aguarda um tempo antes de acionar o rele de alimentação dos motores
     PORTDbits.RD7 = 1;                  // Bit de acionamento de rele (alimentação dos motores)
+    PORTDbits.RD3 = 1;                  // Indica que a placa está ligada.
 
     do
     {
@@ -101,6 +109,7 @@ char recebe_dado_usb()
         sera' encerrado nesse ponto. */
     } while ( byte_recebido == 0xFF );
 
+    PORTDbits.RD2 = 1;                      // Aciona um LED indicando que um controle foi recebido;
     return byte_recebido;                   // Retorna o dado recebido;
 
 } 
@@ -250,7 +259,7 @@ void processa_dado( char controle )
         else
         {
             ativa_dados(data);              // Ativa os dados recebidos;
-            
+            vibracall_motor(100);           // Vibra o motor por 100 ms;
             putc_cdc('K');                  // Traminssão OK - Sinaliza a rasp que a transmissão foi um sucesso;
         }
     }
